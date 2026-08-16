@@ -37,12 +37,6 @@ npm run typecheck    # tsc --noEmit
 npm run build        # build de producción
 ```
 
-## Despliegue en Vercel
-
-1. Sube este repositorio a GitHub.
-2. En [vercel.com/new](https://vercel.com/new) importa el proyecto (framework: Next.js).
-3. No requiere variables de entorno ni base de datos. Despliega y listo.
-
 ### Nota sobre PDFs
 
-Los PDFs que son mapas de bits (escaneos) no contienen texto extraíble; para esos usa la pestaña **📷 Subir foto**. PDF.js también necesita descargar un worker (~1 MB) desde unpkg la primera vez que se usa un PDF.
+Los PDFs que son mapas de bits (escaneos) no contienen texto extraíble; en esos casos se recomienda pegar el texto directamente. PDF.js necesita descargar un worker desde CDN la primera vez que se procesa un archivo PDF.
