@@ -6,7 +6,7 @@ import type {
   ResultadoGeneracion,
   Tipo,
 } from "@/lib/model";
-import { TIPO_LABEL } from "@/lib/model";
+import { SIN_RESTRICCIONES, TIPO_LABEL } from "@/lib/model";
 import { fmtDuracion } from "@/lib/time";
 import type { GrupoProf } from "@/lib/groups";
 import { gruposDeCurso, profesDeGrupoCompatibles } from "@/lib/groups";
@@ -725,23 +725,45 @@ export function PasoCursosResultados({
               )}
             </Card>
           ) : seleccionados.size > 0 ? (
-            <Card className="p-8 text-center space-y-4 border-2 border-amber-200 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-950/20">
-              <span className="text-4xl">⚠️</span>
+            <Card className="p-8 text-center space-y-4 border-2 border-amber-200 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 shadow-sm">
+              <span className="text-4xl">😅</span>
               <div className="space-y-1">
-                <h3 className="text-base font-extrabold text-amber-900 dark:text-amber-200">
-                  No hay combinaciones posibles para los {seleccionados.size} cursos seleccionados
+                <h3 className="text-base font-black text-zinc-900 dark:text-zinc-100">
+                  No encontramos combinación con esos filtros o cruces
                 </h3>
-                <p className="text-xs text-amber-800/80 dark:text-amber-300/80 max-w-md mx-auto">
-                  Existen cruces de horario obligatorios entre las asignaturas marcadas o las reglas estrictas están descartando las opciones.
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
+                  Tus asignaturas seleccionadas tienen solapamiento de horas entre sus grupos o tus reglas de preferencia están descartando las opciones.
                 </p>
               </div>
 
-              <div className="rounded-xl bg-white p-4 dark:bg-zinc-900 text-left text-xs space-y-2 border border-amber-200 dark:border-amber-900/40">
-                <p className="font-bold text-zinc-800 dark:text-zinc-200">💡 Sugerencias para resolverlo:</p>
+              {/* Botón de Restablecer Filtros */}
+              <div className="pt-1 flex flex-wrap justify-center gap-2">
+                <Btn
+                  variant="primary"
+                  onClick={() => {
+                    setPrefs({
+                      ...prefs,
+                      pesoMadrugada: 0,
+                      pesoHuecos: 0,
+                      pesoDiasLibres: 0,
+                      diasLibresPreferidos: [],
+                      horaMinimaClase: 0,
+                      restricciones: { ...SIN_RESTRICCIONES },
+                    });
+                    setFijados({});
+                  }}
+                  className="py-2.5 px-5 font-black text-xs shadow-md"
+                >
+                  🔄 Restablecer filtros recomendados
+                </Btn>
+              </div>
+
+              <div className="rounded-xl bg-white p-4 dark:bg-zinc-900 text-left text-xs space-y-2 border border-zinc-200 dark:border-zinc-800">
+                <p className="font-bold text-zinc-800 dark:text-zinc-200">💡 Sugerencias rápidas:</p>
                 <ul className="list-disc list-inside space-y-1 text-zinc-600 dark:text-zinc-300">
-                  <li><strong>Desmarca 1 o 2 cursos</strong> en la columna izquierda para identificar cuál provoca el cruce.</li>
-                  <li>Revisa en <strong>Preferencias & Bloques</strong> si tienes activadas reglas estrictas (como <em>Descartar turnos llenos</em>, <em>Sin clases Sábado</em> o <em>No salir después de...</em>) y desmárcalas temporalmente.</li>
-                  <li>Verifica en el selector de cada curso si fijaste una opción específica que bloquea el resto de horas.</li>
+                  <li><strong>Desmarca 1 curso</strong> en la columna izquierda para saber cuál asignatura genera el choque de horario.</li>
+                  <li>Revisa en la pestaña <strong>Preferencias & Bloques</strong> si tienes límites rígidos de horas o días libres.</li>
+                  <li>Si tenías una opción fijada (📌), asegúrate de tenerla en <em>Explorar todas las opciones</em>.</li>
                 </ul>
               </div>
             </Card>
