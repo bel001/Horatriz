@@ -169,45 +169,71 @@ export function PasoTexto({
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           {/* Paso 1: Paginación en 50 */}
-          <div className="space-y-2 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="flex items-center justify-between text-xs font-bold text-zinc-800 dark:text-zinc-200">
-              <span>Paso 1: Ajustar paginación</span>
-              <Badge color="amber">1</Badge>
-            </div>
-            <div className="flex h-28 items-center justify-center overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-950">
-              <img
-                src="/guia/guia_1.png"
-                alt="Ajustar paginación en 50 por página"
-                className="h-16 object-contain"
-              />
+          <div className="flex flex-col justify-between space-y-2 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
+            <div>
+              <div className="flex items-center justify-between text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                <span>Paso 1: Ajustar paginación</span>
+                <Badge color="amber">1</Badge>
+              </div>
+              <div className="mt-2 flex h-28 items-center justify-center overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-950">
+                <img
+                  src="/guia/guia_1.png"
+                  alt="Ajustar paginación en 50 por página"
+                  className="h-16 object-contain"
+                />
+              </div>
             </div>
             <p className="text-xs font-extrabold text-emerald-700 dark:text-emerald-400 pt-1">
-              💡 Recomendación: poner en 50.
+              💡 Recomendación: poner en 50 por página.
             </p>
           </div>
 
-          {/* Paso 2: Control + A y copiar todo el texto (Con letras borrosas) */}
-          <div className="space-y-2 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="flex items-center justify-between text-xs font-bold text-zinc-800 dark:text-zinc-200">
-              <span>Paso 2: Copiar todo el texto</span>
-              <Badge color="emerald">2</Badge>
+          {/* Paso 2: Control + A y copiar todo el texto */}
+          <div className="flex flex-col justify-between space-y-2 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
+            <div>
+              <div className="flex items-center justify-between text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                <span>Paso 2: Copiar todo el texto</span>
+                <Badge color="emerald">2</Badge>
+              </div>
+              <div className="relative mt-2 h-28 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
+                <img
+                  src="/guia/guia_2.png"
+                  alt="Seleccionar y copiar texto con letras borrosas"
+                  className="h-full w-full object-cover blur-[3.5px] opacity-80 select-none pointer-events-none"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                  <span className="rounded-lg bg-zinc-900/85 px-3 py-1.5 text-xs font-mono font-black text-white shadow-md border border-white/20">
+                    ⌨️ Ctrl + A → Ctrl + C
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="relative h-28 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950">
-              <img
-                src="/guia/guia_2.png"
-                alt="Seleccionar y copiar texto con letras borrosas"
-                className="h-full w-full object-cover blur-[3.5px] opacity-80 select-none pointer-events-none"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                <span className="rounded-lg bg-zinc-900/85 px-3 py-1.5 text-xs font-mono font-black text-white shadow-md border border-white/20">
-                  ⌨️ Ctrl + A → Ctrl + C
+            <p className="text-xs font-extrabold text-emerald-700 dark:text-emerald-400 pt-1">
+              📋 Presionar Ctrl + A y copiar todo el texto.
+            </p>
+          </div>
+
+          {/* Paso 3: Copia toda la oferta o tus cursos */}
+          <div className="flex flex-col justify-between space-y-2 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
+            <div>
+              <div className="flex items-center justify-between text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                <span>Paso 3: Pega todos tus cursos</span>
+                <Badge color="sky">3</Badge>
+              </div>
+              <div className="mt-2 flex h-28 flex-col items-center justify-center rounded-lg border border-dashed border-emerald-300 bg-emerald-50/50 p-3 text-center dark:border-emerald-900 dark:bg-emerald-950/40">
+                <span className="text-2xl mb-1">✨ 🎓 📅</span>
+                <span className="text-[11px] font-black text-emerald-800 dark:text-emerald-300">
+                  Cursos Ilimitados
+                </span>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
+                  Evalúa todas las asignaturas
                 </span>
               </div>
             </div>
             <p className="text-xs font-extrabold text-emerald-700 dark:text-emerald-400 pt-1">
-              📋 Control + A y copiar todo el texto.
+              🚀 Pega todos los cursos que necesites (o la oferta completa). Horatriz evaluará todas las alternativas para encontrar la mejor combinación sin cruces.
             </p>
           </div>
         </div>
