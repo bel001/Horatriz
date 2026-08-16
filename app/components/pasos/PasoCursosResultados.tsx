@@ -87,12 +87,8 @@ export function PasoCursosResultados({
         })
       : cursos;
 
-    return [...base].sort((a, b) => {
-      const aSel = seleccionados.has(a.codigo) ? 0 : 1;
-      const bSel = seleccionados.has(b.codigo) ? 0 : 1;
-      return aSel - bSel;
-    });
-  }, [cursos, busquedaCurso, seleccionados]);
+    return base;
+  }, [cursos, busquedaCurso]);
 
   const gruposPorCurso = useMemo(() => {
     const map: Record<string, GrupoProf[]> = {};
