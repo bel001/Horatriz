@@ -123,68 +123,30 @@ export function PreferenciasPanel({
 
   return (
     <div className="grid gap-4">
-      {/* Selector Rápido de Turno Preferido */}
+      {/* Indicador del Turno Activo (se configura desde la barra lateral de cursos) */}
       <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20">
         <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-          ⚡ Filtro Rápido por Turno de Estudio
+          ⚡ Turno Activo
         </p>
-        <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-          Selecciona tu turno de preferencia para filtrar y priorizar automáticamente tus clases:
-        </p>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <button
-            type="button"
-            onClick={() => aplicarTurno("cualquiera")}
-            className={`flex flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all ${
-              esCualquiera
-                ? "border-emerald-500 bg-emerald-600 text-white shadow-md font-extrabold"
-                : "border-zinc-200 bg-white text-zinc-800 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 font-bold"
-            }`}
-          >
-            <span className="text-sm">🌐</span>
-            <span className="text-xs font-black leading-tight mt-0.5">Cualquier Turno</span>
-            <span className="text-[10px] opacity-80 font-normal">Sin restricción</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => aplicarTurno("manana")}
-            className={`flex flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all ${
-              esManana
-                ? "border-amber-500 bg-amber-500 text-white shadow-md font-extrabold"
-                : "border-zinc-200 bg-white text-zinc-800 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 font-bold"
-            }`}
-          >
-            <span className="text-sm">☀️</span>
-            <span className="text-xs font-black leading-tight mt-0.5">Solo Mañana</span>
-            <span className="text-[10px] opacity-80 font-normal">07:00 – 14:00</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => aplicarTurno("tarde")}
-            className={`flex flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all ${
-              esTarde
-                ? "border-sky-500 bg-sky-500 text-white shadow-md font-extrabold"
-                : "border-zinc-200 bg-white text-zinc-800 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 font-bold"
-            }`}
-          >
-            <span className="text-sm">⛅</span>
-            <span className="text-xs font-black leading-tight mt-0.5">Solo Tarde</span>
-            <span className="text-[10px] opacity-80 font-normal">13:00 – 18:00</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => aplicarTurno("noche")}
-            className={`flex flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all ${
-              esNoche
-                ? "border-indigo-500 bg-indigo-600 text-white shadow-md font-extrabold"
-                : "border-zinc-200 bg-white text-zinc-800 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 font-bold"
-            }`}
-          >
-            <span className="text-sm">🌙</span>
-            <span className="text-xs font-black leading-tight mt-0.5">Solo Noche</span>
-            <span className="text-[10px] opacity-80 font-normal">18:00 – 22:30</span>
-          </button>
+        <div className="mt-2 flex items-center gap-2">
+          <span className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-black ${
+            esManana
+              ? "bg-amber-500 text-white"
+              : esTarde
+                ? "bg-sky-500 text-white"
+                : esNoche
+                  ? "bg-indigo-600 text-white"
+                  : "bg-emerald-600 text-white"
+          }`}>
+            {esManana ? "☀️ Solo Mañana (07:00–14:00)"
+              : esTarde ? "⛅ Solo Tarde (13:00–18:00)"
+              : esNoche ? "🌙 Solo Noche (18:00–22:30)"
+              : "🌐 Cualquier Turno"}
+          </span>
         </div>
+        <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+          💡 Puedes cambiar el turno desde los botones rápidos en la pestaña <strong>Cursos</strong>.
+        </p>
       </Card>
 
       <Card>

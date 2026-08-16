@@ -76,6 +76,9 @@ export function PasoCursosResultados({
   const [borradorVer, setBorradorVer] = useState<BorradorGuardado | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const modalGridRef = useRef<HTMLDivElement>(null);
+  const [configAbiertas, setConfigAbiertas] = useState<Set<string>>(new Set());
+  const [resultadoVistoRef, setResultadoVistoRef] = useState<ResultadoGeneracion | null>(null);
+  const hayResultadoNuevo = tabMovilPrincipal === "config" && resultado !== null && resultado !== resultadoVistoRef;
 
   const cursosFiltrados = useMemo(() => {
     const q = busquedaCurso.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -140,7 +143,8 @@ export function PasoCursosResultados({
 
   const handleGuardar = () => {
     if (horarioActual) {
-      onGuardarBorrador(nombreBorrador, horarioActual);
+      const nombre = nombreBorrador.trim() || `Horario ${new Date().toLocaleDateString("es", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}`;
+      onGuardarBorrador(nombre, horarioActual);
       setNombreBorrador("");
       setGuardadoExitosa(true);
       setTimeout(() => setGuardadoExitosa(false), 2500);
@@ -177,10 +181,10 @@ export function PasoCursosResultados({
             title="Alternar vista ampliada"
             className="text-[11px] py-1 px-2 hidden sm:inline-flex"
           >
-            {maximizado ? "↙️ Normal" : "↔️ Max"}
+            {maximizado ? "↙️ Normal" : "↔️ Ampliar"}
           </Btn>
           <Btn variant="secondary" onClick={onCompartir} className="text-[11px] py-1 px-2">
-            {compartido ? "✅" : "🔗"}
+            {compartido ? "✅ Copiado" : "🔗"}<span className="hidden sm:inline ml-1">Compartir</span>
           </Btn>
           <Btn
             variant="secondary"
@@ -188,10 +192,10 @@ export function PasoCursosResultados({
             disabled={!resultado || resultado.horarios.length < 2}
             className="text-[11px] py-1 px-2"
           >
-            🔀
+            🔀<span className="hidden sm:inline ml-1">Comparar</span>
           </Btn>
           <Btn variant="secondary" onClick={onVolver} className="text-[11px] py-1 px-2">
-            ← Volver
+            ← <span className="hidden sm:inline">Volver</span>
           </Btn>
         </div>
       </div>
@@ -201,13 +205,22 @@ export function PasoCursosResultados({
       <div className="grid grid-cols-2 gap-1.5 rounded-2xl bg-zinc-200/80 p-1.5 dark:bg-zinc-800/80 lg:hidden shadow-xs">
         <button
           type="button"
-          onClick={() => setTabMovilPrincipal("horario")}
-          className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-black transition-all ${
+          onClick={() => {
+            setTabMovilPrincipal("horario");
+            setResultadoVistoRef(resultado);
+          }}
+          className={`relative flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-black transition-all ${
             tabMovilPrincipal === "horario"
               ? "bg-emerald-600 text-white shadow-md"
               : "text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
           }`}
         >
+          {hayResultadoNuevo && (
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
+            </span>
+          )}
           <span>📅</span> Ver Horario
           {resultado && (
             <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-mono">
@@ -470,74 +483,91 @@ export function PasoCursosResultados({
                         </div>
                       </div>
 
-                      {/* Preferencias de docente y fijar opción */}
-                      {sel && (
-                        <div className="mt-3 space-y-2 border-t border-zinc-100 pt-2 dark:border-zinc-800">
-                          {tiposPresentes.length > 0 && (
-                            <div className="grid gap-2 sm:grid-cols-2 text-xs">
-                              {tiposPresentes.map((tipo) => {
-                                const profes = profesDeGrupoCompatibles(grupos, docPref[curso.codigo] ?? {}, tipo);
-                                const profVal = docPref[curso.codigo]?.[tipo] ?? "";
-                                return (
-                                  <div key={tipo}>
-                                    <span className="mb-0.5 block text-[10px] font-semibold text-zinc-500">
-                                      Docente {TIPO_LABEL[tipo]}:
-                                    </span>
-                                    <select
-                                      className={`${inputCls()} py-0.5 text-[11px]`}
-                                      value={profVal}
-                                      onChange={(e) =>
-                                        setDocPref((prev) => ({
-                                          ...prev,
-                                          [curso.codigo]: {
-                                            ...(prev[curso.codigo] ?? {}),
-                                            [tipo]: e.target.value,
-                                          },
-                                        }))
-                                      }
-                                    >
-                                      <option value="">Cualquiera</option>
-                                      {profes.map((p) => (
-                                        <option key={p} value={p}>
-                                          {p}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
+                      {/* Preferencias de docente y fijar opción — Acordeón */}
+                      {sel && (tiposPresentes.length > 0 || curso.opciones.length > 1) && (
+                        <div className="mt-3 border-t border-zinc-100 pt-2 dark:border-zinc-800">
+                          <button
+                            type="button"
+                            onClick={() => setConfigAbiertas((prev) => {
+                              const n = new Set(prev);
+                              if (n.has(curso.codigo)) n.delete(curso.codigo);
+                              else n.add(curso.codigo);
+                              return n;
+                            })}
+                            className="flex w-full items-center justify-between rounded-lg px-1.5 py-1 text-[11px] font-bold text-zinc-500 hover:bg-zinc-50 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200 transition-colors"
+                          >
+                            <span>⚙️ Configuración avanzada</span>
+                            <span className="text-zinc-400 text-[10px]">{configAbiertas.has(curso.codigo) ? "▾" : "▸"}</span>
+                          </button>
+                          {configAbiertas.has(curso.codigo) && (
+                            <div className="mt-2 space-y-2 animate-fade-in">
+                              {tiposPresentes.length > 0 && (
+                                <div className="grid gap-2 sm:grid-cols-2 text-xs">
+                                  {tiposPresentes.map((tipo) => {
+                                    const profes = profesDeGrupoCompatibles(grupos, docPref[curso.codigo] ?? {}, tipo);
+                                    const profVal = docPref[curso.codigo]?.[tipo] ?? "";
+                                    return (
+                                      <div key={tipo}>
+                                        <span className="mb-0.5 block text-[10px] font-semibold text-zinc-500">
+                                          Docente {TIPO_LABEL[tipo]}:
+                                        </span>
+                                        <select
+                                          className={`${inputCls()} py-0.5 text-[11px]`}
+                                          value={profVal}
+                                          onChange={(e) =>
+                                            setDocPref((prev) => ({
+                                              ...prev,
+                                              [curso.codigo]: {
+                                                ...(prev[curso.codigo] ?? {}),
+                                                [tipo]: e.target.value,
+                                              },
+                                            }))
+                                          }
+                                        >
+                                          <option value="">Cualquiera</option>
+                                          {profes.map((p) => (
+                                            <option key={p} value={p}>
+                                              {p}
+                                            </option>
+                                          ))}
+                                        </select>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
 
-                          {curso.opciones.length > 1 && (
-                            <div className="flex items-center justify-between gap-2 text-xs">
-                              <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 shrink-0">
-                                📌 Fijar opción:
-                              </span>
-                              <select
-                                className={`${inputCls()} py-1 text-xs font-semibold`}
-                                value={fijados[curso.codigo] ?? ""}
-                                onChange={(e) =>
-                                  setFijados((prev) => ({
-                                    ...prev,
-                                    [curso.codigo]: e.target.value,
-                                  }))
-                                }
-                              >
-                                <option value="">Explorar todas las opciones</option>
-                                {curso.opciones.map((o) => {
-                                  const textSecc = o.seccion ? `Secc. ${o.seccion}` : "";
-                                  const textNrc = o.nrc ? `NRC: ${o.nrc}` : "";
-                                  const esVirt = o.sesiones.some((s) => s.esVirtual || !s.aula || s.aula.toUpperCase() === "NINGUNO");
-                                  const textMod = esVirt ? "💻 Virtual" : o.aula && o.aula.toUpperCase() !== "NINGUNO" ? `📍 Aula ${o.aula}` : "";
-                                  const labelDetalle = [textSecc, textNrc, textMod].filter(Boolean).join(" · ");
-                                  return (
-                                    <option key={o.id} value={o.id}>
-                                      {labelDetalle || `Opción ${o.id}`} ({o.sesiones.length} ses.)
-                                    </option>
-                                  );
-                                })}
-                              </select>
+                              {curso.opciones.length > 1 && (
+                                <div className="flex items-center justify-between gap-2 text-xs">
+                                  <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 shrink-0">
+                                    📌 Fijar opción:
+                                  </span>
+                                  <select
+                                    className={`${inputCls()} py-1 text-xs font-semibold`}
+                                    value={fijados[curso.codigo] ?? ""}
+                                    onChange={(e) =>
+                                      setFijados((prev) => ({
+                                        ...prev,
+                                        [curso.codigo]: e.target.value,
+                                      }))
+                                    }
+                                  >
+                                    <option value="">Explorar todas las opciones</option>
+                                    {curso.opciones.map((o) => {
+                                      const textSecc = o.seccion ? `Secc. ${o.seccion}` : "";
+                                      const textNrc = o.nrc ? `NRC: ${o.nrc}` : "";
+                                      const esVirt = o.sesiones.some((s) => s.esVirtual || !s.aula || s.aula.toUpperCase() === "NINGUNO");
+                                      const textMod = esVirt ? "💻 Virtual" : o.aula && o.aula.toUpperCase() !== "NINGUNO" ? `📍 Aula ${o.aula}` : "";
+                                      const labelDetalle = [textSecc, textNrc, textMod].filter(Boolean).join(" · ");
+                                      return (
+                                        <option key={o.id} value={o.id}>
+                                          {labelDetalle || `Opción ${o.id}`} ({o.sesiones.length} ses.)
+                                        </option>
+                                      );
+                                    })}
+                                  </select>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>

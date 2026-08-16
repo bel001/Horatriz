@@ -271,21 +271,40 @@ export function GridSemana({
       </div>
 
       {/* Vista Agenda (Lista Compacta) */}
-      {vistaAgenda ? (
+      {vistaAgenda ? (() => {
+        const sesionesDelDia = sesionesDelGrid.filter(s => s.dia === diaActivoMovil);
+        return (
         <div className="space-y-2 rounded-xl border border-zinc-200 bg-white p-3 shadow-md dark:border-zinc-800 dark:bg-zinc-950">
+          {/* Selector de día para la vista agenda */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+            {diasAMostrar.map((d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => setDiaActivoMovil(d)}
+                className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                  diaActivoMovil === d
+                    ? "bg-emerald-600 text-white shadow-sm"
+                    : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                }`}
+              >
+                {DIA_LABEL[d]}
+              </button>
+            ))}
+          </div>
           <div className="text-xs font-black uppercase text-zinc-700 dark:text-zinc-300 border-b pb-2 dark:border-zinc-800 flex items-center justify-between">
             <span>📅 {DIA_LABEL[diaActivoMovil]}</span>
             <span className="text-[10px] font-semibold text-zinc-500">
-              {sesionesDelGrid.length} clase{sesionesDelGrid.length !== 1 ? "s" : ""}
+              {sesionesDelDia.length} clase{sesionesDelDia.length !== 1 ? "s" : ""}
             </span>
           </div>
-          {sesionesDelGrid.length === 0 ? (
+          {sesionesDelDia.length === 0 ? (
             <div className="py-6 text-center text-xs text-zinc-400">
               🌴 Sin clases programadas para este día.
             </div>
           ) : (
             <div className="space-y-2 pt-1">
-              {sesionesDelGrid
+              {sesionesDelDia
                 .sort((a, b) => a.inicio - b.inicio)
                 .map((s) => {
                   const cInfo = paletaDeCurso(s.codigo, colores);
@@ -328,7 +347,8 @@ export function GridSemana({
             </div>
           )}
         </div>
-      ) : (
+        );
+      })() : (
         /* Grid Principal */
         <div className="overflow-x-auto overflow-y-visible rounded-xl border border-zinc-200 bg-white shadow-md dark:border-zinc-800 dark:bg-zinc-950">
           <div

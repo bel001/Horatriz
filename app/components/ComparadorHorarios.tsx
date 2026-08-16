@@ -83,12 +83,11 @@ export function ComparadorHorarios({
         </div>
 
         {/* Grilla Comparativa */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div
-            className="grid gap-6"
-            style={{
-              gridTemplateColumns: `repeat(${elegidos.length}, minmax(300px, 1fr))`,
-            }}
+            className={`grid gap-4 sm:gap-6 grid-cols-1 ${
+              elegidos.length === 2 ? "md:grid-cols-2" : elegidos.length >= 3 ? "md:grid-cols-2 xl:grid-cols-3" : ""
+            }`}
           >
             {elegidos.map(({ index, item }) => (
               <Card key={index} className="flex flex-col space-y-4">
@@ -97,7 +96,7 @@ export function ComparadorHorarios({
                     <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                       Opción #{index + 1}
                     </span>
-                    <h3 className="text-lg font-extrabold text-zinc-900 dark:text-zinc-50">
+                    <h3 className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-zinc-50">
                       Puntaje: {item.score}%
                     </h3>
                   </div>

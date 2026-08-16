@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge, Btn, Card, Paso } from "../ui";
 import { OcrUpload } from "../OcrUpload";
 import { SubirArchivo } from "../SubirArchivo";
@@ -77,6 +77,23 @@ export function PasoTexto({
     }
   };
 
+  const [mostrarBienvenida, setMostrarBienvenida] = useState(false);
+
+  // Mostrar banner de bienvenida solo la primera vez
+  useEffect(() => {
+    try {
+      const visto = localStorage.getItem("horatriz_bienvenida_visto");
+      if (!visto) setMostrarBienvenida(true);
+    } catch {}
+  }, []);
+
+  const cerrarBienvenida = () => {
+    setMostrarBienvenida(false);
+    try {
+      localStorage.setItem("horatriz_bienvenida_visto", "true");
+    } catch {}
+  };
+
   return (
     <div className="space-y-6">
       <Paso
@@ -84,6 +101,36 @@ export function PasoTexto({
         titulo="Ingresa tu Oferta Académica"
         descripcion="Copia y pega el texto de tu portal universitario, o sube una foto / archivo de tu horario."
       />
+
+      {/* Banner de Bienvenida (primer uso) */}
+      {mostrarBienvenida && (
+        <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-5 shadow-md dark:border-emerald-800 dark:from-emerald-950/40 dark:via-zinc-950 dark:to-teal-950/30">
+          <button
+            type="button"
+            onClick={cerrarBienvenida}
+            className="absolute right-3 top-3 rounded-full p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+            title="Cerrar"
+          >
+            ✕
+          </button>
+          <div className="flex items-start gap-3">
+            <span className="text-3xl">🎓</span>
+            <div className="space-y-1.5">
+              <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-50">
+                ¡Bienvenido a <span className="text-emerald-600 dark:text-emerald-400">Horatriz</span>!
+              </h3>
+              <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                Pega el texto de tu oferta académica del portal universitario y generaremos automáticamente <strong>las mejores combinaciones de horario sin cruces</strong> en segundos.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                <span>✅ 100% gratis</span>
+                <span>🔒 Tus datos no salen de tu navegador</span>
+                <span>⚡ Sin registro</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {avisoOcr && (
         <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-200">

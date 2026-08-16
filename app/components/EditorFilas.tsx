@@ -130,17 +130,17 @@ function TablaFilas({
       <table className="w-full min-w-[1100px] border-collapse text-sm">
         <thead>
           <tr className="bg-zinc-50 text-left text-[11px] uppercase tracking-wide text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
-            <th className="px-2 py-2 font-semibold">Ign.</th>
-            <th className="px-2 py-2 font-semibold">NRC</th>
-            <th className="px-2 py-2 font-semibold">Sec.</th>
-            <th className="px-2 py-2 font-semibold">Tipo</th>
-            <th className="px-2 py-2 font-semibold">Liga</th>
-            <th className="px-2 py-2 font-semibold">ID Liga</th>
-            <th className="px-2 py-2 font-semibold">Día</th>
-            <th className="px-2 py-2 font-semibold">Inicio</th>
-            <th className="px-2 py-2 font-semibold">Fin</th>
-            <th className="px-2 py-2 font-semibold">Aula</th>
-            <th className="px-2 py-2 font-semibold">Docente</th>
+            <th className="px-2 py-2 font-semibold" title="Marcar para ignorar esta fila del procesamiento">Ign.</th>
+            <th className="px-2 py-2 font-semibold" title="Número de Referencia del Curso (identificador único de la sección)">NRC</th>
+            <th className="px-2 py-2 font-semibold" title="Sección del curso (ej. A, B, C)">Sec.</th>
+            <th className="px-2 py-2 font-semibold" title="Tipo de clase: T = Teoría, P = Práctica, L = Laboratorio">Tipo</th>
+            <th className="px-2 py-2 font-semibold" title="Número de liga: agrupa las clases que deben ir juntas (mismo grupo)">Liga</th>
+            <th className="px-2 py-2 font-semibold" title="Identificador de liga: vincula Teoría + Práctica + Lab del mismo grupo">ID Liga</th>
+            <th className="px-2 py-2 font-semibold" title="Día de la semana en que se dicta la clase">Día</th>
+            <th className="px-2 py-2 font-semibold" title="Hora de inicio de la clase">Inicio</th>
+            <th className="px-2 py-2 font-semibold" title="Hora de fin de la clase">Fin</th>
+            <th className="px-2 py-2 font-semibold" title="Aula o salón donde se dicta la clase (Ninguno = virtual)">Aula</th>
+            <th className="px-2 py-2 font-semibold" title="Nombre del profesor que dicta la clase">Docente</th>
           </tr>
         </thead>
         <tbody>

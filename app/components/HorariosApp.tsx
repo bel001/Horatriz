@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   Curso,
   HorarioResult,
@@ -55,6 +55,14 @@ export default function HorariosApp() {
   } = useEstadoHorarios();
 
   const [resultado, setResultado] = useState<ResultadoGeneracion | null>(null);
+
+  // Calcular qué pasos del stepper están deshabilitados por falta de datos
+  const disabledPasos = useMemo(() => {
+    const disabled = new Set<number>();
+    if (filas.length === 0) disabled.add(1); // No hay filas → no se puede revisar
+    if (cursos.length === 0) disabled.add(2); // No hay cursos → no se puede generar
+    return disabled;
+  }, [filas.length, cursos.length]);
 
   // Construir selección y parámetros para generación
   const construirGeneracion = () => {
@@ -166,7 +174,7 @@ export default function HorariosApp() {
   return (
     <main suppressHydrationWarning className="mx-auto flex-1 w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 py-8">
       {/* Indicador de Pasos / Stepper Interactivo */}
-      {stepper(Math.min(paso, 2), PASOS, (idx) => setPaso(idx))}
+      {stepper(Math.min(paso, 2), PASOS, (idx) => setPaso(idx), disabledPasos)}
 
       {/* Pantalla según Paso */}
       {paso === 0 && (

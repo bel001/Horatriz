@@ -166,7 +166,8 @@ export function Paso({
 export function stepper(
   actual: number,
   pasos: string[],
-  onSelectPaso?: (index: number) => void
+  onSelectPaso?: (index: number) => void,
+  disabledPasos?: Set<number>
 ) {
   return (
     <nav aria-label="Navegación de pasos">
@@ -174,7 +175,7 @@ export function stepper(
         {pasos.map((p, i) => {
           const hecho = i < actual;
           const activo = i === actual;
-          const esClickeable = Boolean(onSelectPaso);
+          const esClickeable = Boolean(onSelectPaso) && !disabledPasos?.has(i);
 
           return (
             <li key={p} className="flex flex-1 items-center gap-2 min-w-max sm:min-w-0">
@@ -185,21 +186,25 @@ export function stepper(
                 className={`flex flex-1 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-bold transition-all text-left ${
                   esClickeable ? "cursor-pointer hover:scale-[1.01] active:scale-[0.98]" : ""
                 } ${
-                  hecho
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300 dark:hover:bg-emerald-900/60"
-                    : activo
-                      ? "border-emerald-600 bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                      : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-200"
+                  disabledPasos?.has(i)
+                    ? "border-zinc-200 bg-zinc-100 text-zinc-400 cursor-not-allowed opacity-60 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600"
+                    : hecho
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300 dark:hover:bg-emerald-900/60"
+                      : activo
+                        ? "border-emerald-600 bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                        : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-200"
                 }`}
-                title={`Ir a la vista: ${p}`}
+                title={disabledPasos?.has(i) ? `Completa los pasos anteriores primero` : `Ir a la vista: ${p}`}
               >
                 <span
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-extrabold ${
-                    hecho
-                      ? "bg-emerald-600 text-white"
-                      : activo
-                        ? "bg-white/25 text-white"
-                        : "bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500"
+                    disabledPasos?.has(i)
+                      ? "bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600"
+                      : hecho
+                        ? "bg-emerald-600 text-white"
+                        : activo
+                          ? "bg-white/25 text-white"
+                          : "bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500"
                   }`}
                 >
                   {hecho ? (

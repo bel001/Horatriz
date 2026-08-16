@@ -47,6 +47,23 @@ export function PasoRevisar({
         </Card>
       )}
 
+      {advertencias.length === 0 && (
+        <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+          <div className="flex items-start gap-2.5">
+            <span className="text-lg shrink-0">✅</span>
+            <div>
+              <h4 className="text-xs font-bold text-emerald-800 dark:text-emerald-200">
+                ¡Se ve bien! En la mayoría de casos no necesitas editar nada.
+              </h4>
+              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80 mt-0.5">
+                Si todos los cursos, días y horarios se detectaron correctamente, simplemente presiona <strong>Confirmar y Continuar</strong> abajo.
+                Solo edita las filas marcadas en ámbar si notas algún error.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
       <EditorFilas filas={filas} onChange={setFilas} />
 
       <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
