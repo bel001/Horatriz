@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://horatriz.vercel.app"),
   title: "Horatriz - Generador Inteligente de Horarios Universitarios",
   description:
     "Crea y optimiza tu horario universitario sin cruces de forma automática. Simula combinaciones, evita horas muertas y elige a tus profesores preferidos.",
@@ -35,12 +36,19 @@ export const metadata: Metadata = {
     title: "Horatriz - Tu Horario Universitario Ideal Sin Cruces",
     description:
       "Genera e inspecciona las mejores combinaciones de horario universitario en segundos. 100% gratis.",
+    url: "https://horatriz.vercel.app",
     siteName: "Horatriz",
     locale: "es_PE",
     type: "website",
     images: [
       {
-        url: "https://horatriz.vercel.app/og-image.png",
+        url: "/logo.png",
+        width: 800,
+        height: 800,
+        alt: "Horatriz Logo",
+      },
+      {
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Horatriz - Generador de Horarios Universitarios",
@@ -52,7 +60,7 @@ export const metadata: Metadata = {
     title: "Horatriz - Generador de Horarios Universitarios",
     description:
       "Genera y optimiza tus horarios universitarios sin cruces de forma automática.",
-    images: ["https://horatriz.vercel.app/og-image.png"],
+    images: ["/logo.png"],
   },
   robots: {
     index: true,
