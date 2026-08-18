@@ -90,8 +90,14 @@ export function PasoCursosResultados({
         })
       : cursos;
 
-    return base;
-  }, [cursos, busquedaCurso]);
+    return [...base].sort((a, b) => {
+      const aSel = seleccionados.has(a.codigo);
+      const bSel = seleccionados.has(b.codigo);
+      if (aSel && !bSel) return -1;
+      if (!aSel && bSel) return 1;
+      return (a.nombre || a.codigo).localeCompare(b.nombre || b.codigo, "es");
+    });
+  }, [cursos, busquedaCurso, seleccionados]);
 
   const gruposPorCurso = useMemo(() => {
     const map: Record<string, GrupoProf[]> = {};
