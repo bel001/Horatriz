@@ -56,6 +56,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: "CfUsVkrx4_vci3jprwAB1ITx8F4LU7YelD6W4kqkJ9k",
+  },
 };
 
 const temaScript = `(function(){try{var t=localStorage.getItem("horatriz-theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;
