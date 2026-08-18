@@ -47,22 +47,30 @@ export function PasoRevisar({
         </Card>
       )}
 
-      {advertencias.length === 0 && (
-        <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+      {/* Banner Prominente con Botón Directo */}
+      <Card className="border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 via-white to-teal-50 p-4 shadow-sm dark:border-emerald-800 dark:from-emerald-950/40 dark:via-zinc-900 dark:to-teal-950/30">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-start gap-2.5">
-            <span className="text-lg shrink-0">✅</span>
+            <span className="text-2xl shrink-0">✅</span>
             <div>
-              <h4 className="text-xs font-bold text-emerald-800 dark:text-emerald-200">
-                ¡Se ve bien! En la mayoría de casos no necesitas editar nada.
+              <h4 className="text-sm font-black text-emerald-900 dark:text-emerald-100">
+                ¡Se detectaron {validas} clases válidas correctamente!
               </h4>
-              <p className="text-xs text-emerald-700/80 dark:text-emerald-300/80 mt-0.5">
-                Si todos los cursos, días y horarios se detectaron correctamente, simplemente presiona <strong>Confirmar y Continuar</strong> abajo.
-                Solo edita las filas marcadas en ámbar si notas algún error.
+              <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-0.5">
+                No necesitas editar nada en la tabla de abajo a menos que veas un dato incorrecto o resaltado en ámbar.
               </p>
             </div>
           </div>
-        </Card>
-      )}
+          <Btn
+            variant="primary"
+            disabled={validas === 0}
+            onClick={onContinuar}
+            className="w-full sm:w-auto text-xs py-2.5 px-4 font-black shadow-md shrink-0"
+          >
+            🟢 Todo se ve bien ➔ Generar Horario ({validas} clases)
+          </Btn>
+        </div>
+      </Card>
 
       <EditorFilas filas={filas} onChange={setFilas} />
 

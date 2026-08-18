@@ -265,9 +265,16 @@ export function GridSemana({
             {vistaAgenda ? "📊 Gráfica" : "📋 Agenda (Lista)"}
           </button>
         </div>
-        <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+        <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium hidden sm:inline">
           {diasAMostrar.length} días · Desliza ↔️ para explorar la semana
         </span>
+      </div>
+
+      {/* Pista de Desplazamiento Horizontal en Móvil */}
+      <div className="flex sm:hidden items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 p-2 text-center text-[11px] font-black text-emerald-800 dark:from-emerald-950/80 dark:via-teal-950/80 dark:to-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-xs">
+        <span className="animate-bounce">👈</span>
+        <span>Desliza con tu dedo a la derecha para ver tu semana completa</span>
+        <span className="animate-bounce">👉</span>
       </div>
 
       {/* Vista Agenda (Lista Compacta) */}
