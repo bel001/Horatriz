@@ -15,9 +15,47 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Horatriz - Generador de Horarios Universitarios",
+  title: "Horatriz - Generador Inteligente de Horarios Universitarios",
   description:
-    "Genera y optimiza tus horarios universitarios sin cruces de forma automática.",
+    "Crea y optimiza tu horario universitario sin cruces de forma automática. Simula combinaciones, evita horas muertas y elige a tus profesores preferidos.",
+  keywords: [
+    "Horatriz",
+    "Horarios UPAO",
+    "Generador de horarios universitarios",
+    "Simulador de horario",
+    "Horario universitario sin cruces",
+    "Optimizar horario universidad",
+    "Armar horario academico",
+    "UPAO",
+  ],
+  authors: [{ name: "Horatriz Team" }],
+  creator: "Horatriz",
+  publisher: "Horatriz",
+  openGraph: {
+    title: "Horatriz - Tu Horario Universitario Ideal Sin Cruces",
+    description:
+      "Genera e inspecciona las mejores combinaciones de horario universitario en segundos. 100% gratis.",
+    siteName: "Horatriz",
+    locale: "es_PE",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Horatriz - Generador de Horarios Universitarios",
+    description:
+      "Genera y optimiza tus horarios universitarios sin cruces de forma automática.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 const temaScript = `(function(){try{var t=localStorage.getItem("horatriz-theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;
