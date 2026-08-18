@@ -98,8 +98,8 @@ export function PasoTexto({
     <div className="space-y-6">
       <Paso
         n={1}
-        titulo="Ingresa tu Oferta Académica"
-        descripcion="Copia y pega el texto de tu portal universitario, o sube una foto / archivo de tu horario."
+        titulo="Ingresa las Clases de tu Universidad"
+        descripcion="Pega la lista de clases copiada de tu portal o sube un archivo. Horatriz armará las mejores combinaciones sin cruces."
       />
 
       {/* Banner de Bienvenida (primer uso) */}
@@ -113,21 +113,33 @@ export function PasoTexto({
           >
             ✕
           </button>
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">🎓</span>
-            <div className="space-y-1.5">
-              <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-50">
-                ¡Bienvenido a <span className="text-emerald-600 dark:text-emerald-400">Horatriz</span>!
-              </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                Pega el texto de tu oferta académica del portal universitario y generaremos automáticamente <strong>las mejores combinaciones de horario sin cruces</strong> en segundos.
-              </p>
-              <div className="flex flex-wrap gap-3 pt-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
-                <span>✅ 100% gratis</span>
-                <span>🔒 Tus datos no salen de tu navegador</span>
-                <span>⚡ Sin registro</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <span className="text-3xl shrink-0">🎓</span>
+              <div className="space-y-1">
+                <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-50">
+                  ¡Bienvenido a <span className="text-emerald-600 dark:text-emerald-400">Horatriz</span>!
+                </h3>
+                <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                  Genera tu horario universitario en 3 sencillos pasos: <strong>Copia de tu portal $\rightarrow$ Pega aquí $\rightarrow$ Obtén tu horario optimizado sin cruces</strong>.
+                </p>
+                <div className="flex flex-wrap gap-3 pt-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                  <span>✅ 100% gratis</span>
+                  <span>🔒 Procesamiento local seguro</span>
+                  <span>⚡ Sin registro</span>
+                </div>
               </div>
             </div>
+            <Btn
+              variant="primary"
+              className="text-xs py-2 px-3 shrink-0 shadow-md font-black"
+              onClick={() => {
+                setTexto(TEXTO_EJEMPLO);
+                onAnalizar(TEXTO_EJEMPLO);
+              }}
+            >
+              ✨ Probar con Ejemplo Demo ➔
+            </Btn>
           </div>
         </div>
       )}
@@ -149,7 +161,7 @@ export function PasoTexto({
               : "border-transparent text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:hover:text-white"
           }`}
         >
-          📝 Pegar Texto libre
+          📝 Pegar Texto de tu Portal
         </button>
         <button
           type="button"
@@ -167,15 +179,26 @@ export function PasoTexto({
       {/* Contenido según Tab */}
       {tab === "texto" && (
         <Card className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Pegar texto de oferta o portal académico
             </label>
+            <button
+              type="button"
+              onClick={() => {
+                setTexto(TEXTO_EJEMPLO);
+                onAnalizar(TEXTO_EJEMPLO);
+              }}
+              className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 transition-colors"
+              title="Cargar un conjunto de cursos de demostración"
+            >
+              ✨ Cargar Ejemplo (Demo)
+            </button>
           </div>
           <textarea
             rows={10}
             className="w-full rounded-xl border border-zinc-200 p-3 font-mono text-xs outline-none focus:ring-2 focus:ring-emerald-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200"
-            placeholder="Pega aquí los cursos en texto o presiona Ctrl+V con una captura de pantalla..."
+            placeholder="Pega aquí la lista de clases copiada de tu portal universitario (Ctrl + V)... O presiona '✨ Cargar Ejemplo' arriba para probar."
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             suppressHydrationWarning
@@ -191,9 +214,9 @@ export function PasoTexto({
               }
             }}
           />
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs text-zinc-500 dark:text-zinc-400 font-semibold">
-              📋 Tip: Presiona <kbd className="rounded bg-zinc-200 px-1 py-0.5 font-mono text-[10px] dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">Ctrl + V</kbd> para pegar texto o una captura de pantalla en la app.
+              📋 Tip: Presiona <kbd className="rounded bg-zinc-200 px-1 py-0.5 font-mono text-[10px] dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">Ctrl + V</kbd> para pegar tu texto aquí.
             </span>
             <Btn disabled={!texto.trim()} onClick={() => onAnalizar()}>
               Analizar Oferta Académica ➔
