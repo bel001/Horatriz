@@ -104,41 +104,43 @@ export function PasoTexto({
 
       {/* Banner de Bienvenida (primer uso) */}
       {mostrarBienvenida && (
-        <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-5 shadow-md dark:border-emerald-800 dark:from-emerald-950/40 dark:via-zinc-950 dark:to-teal-950/30">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/70 p-5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900/90">
           <button
             type="button"
             onClick={cerrarBienvenida}
-            className="absolute right-3 top-3 rounded-full p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+            className="absolute right-3 top-3 rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition-colors"
             title="Cerrar"
           >
             ✕
           </button>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <span className="text-3xl shrink-0">🎓</span>
+            <div className="flex items-start gap-3.5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-xl font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                🎓
+              </span>
               <div className="space-y-1">
-                <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-50">
+                <h3 className="text-sm font-black text-slate-900 dark:text-zinc-50">
                   ¡Bienvenido a <span className="text-emerald-600 dark:text-emerald-400">Horatriz</span>!
                 </h3>
-                <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                  Genera tu horario universitario en 3 sencillos pasos: <strong>Copia de tu portal $\rightarrow$ Pega aquí $\rightarrow$ Obtén tu horario optimizado sin cruces</strong>.
+                <p className="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed font-medium">
+                  Organiza tu semestre universitario en 3 sencillos pasos: <strong>Copia tu lista de clases $\rightarrow$ Pega el texto aquí $\rightarrow$ Elige tu horario ideal</strong>.
                 </p>
-                <div className="flex flex-wrap gap-3 pt-1 text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                <div className="flex flex-wrap gap-3 pt-1 text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
                   <span>✅ 100% gratis</span>
-                  <span>🔒 Procesamiento local seguro</span>
-                  <span>⚡ Sin registro</span>
+                  <span>🔒 Privacidad total (datos en tu navegador)</span>
+                  <span>⚡ Sin registro obligatorio</span>
                 </div>
               </div>
             </div>
             <Btn
               variant="primary"
-              className="text-xs py-2 px-3 shrink-0 shadow-md font-black"
+              className="text-xs py-2 px-3.5 shrink-0 font-bold"
               onClick={() => {
                 setTexto(TEXTO_EJEMPLO);
                 onAnalizar(TEXTO_EJEMPLO);
               }}
             >
-              ✨ Probar con Ejemplo Demo ➔
+              Probar con Ejemplo Demo ➔
             </Btn>
           </div>
         </div>

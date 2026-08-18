@@ -16,14 +16,14 @@ export function Btn({
   title?: string;
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98] dark:focus-visible:ring-offset-zinc-950";
+    "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98] dark:focus-visible:ring-offset-zinc-950";
   const variantes = {
     primary:
-      "bg-emerald-600 text-white shadow-sm shadow-emerald-600/30 hover:bg-emerald-700",
+      "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 active:bg-emerald-800",
     secondary:
-      "border border-zinc-200 bg-white text-zinc-700 shadow-sm hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white",
+      "border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-slate-50 hover:text-slate-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white",
     ghost:
-      "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white",
+      "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white",
   };
   return (
     <button
@@ -48,7 +48,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-sm shadow-zinc-200/40 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none min-w-0 max-w-full ${className}`}
+      className={`rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs dark:border-zinc-800/90 dark:bg-zinc-900 min-w-0 max-w-full ${className}`}
     >
       {children}
     </div>
@@ -63,17 +63,17 @@ export function Badge({
   color?: "zinc" | "emerald" | "amber" | "rose" | "sky";
 }) {
   const colores = {
-    zinc: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
+    zinc: "bg-slate-100 text-slate-700 border border-slate-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700",
     emerald:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
+      "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-900",
     amber:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
-    rose: "bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300",
-    sky: "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300",
+      "bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-900",
+    rose: "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-900",
+    sky: "bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-900",
   };
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${colores[color]}`}
+      className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-semibold ${colores[color]}`}
     >
       {children}
     </span>
@@ -82,7 +82,7 @@ export function Badge({
 
 export function Label({ children }: { children: ReactNode }) {
   return (
-    <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+    <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-zinc-400">
       {children}
     </label>
   );
@@ -122,13 +122,13 @@ export function Checkbox({
   label: ReactNode;
 }) {
   return (
-    <label className="flex cursor-pointer select-none items-start gap-2 text-sm">
+    <label className="flex cursor-pointer select-none items-start gap-2 text-sm text-slate-800 dark:text-zinc-200 font-medium">
       <input
         type="checkbox"
         checked={Boolean(checked)}
         onChange={(e) => onChange(e.target.checked)}
         suppressHydrationWarning
-        className="mt-0.5 h-4 w-4 rounded border-zinc-300 accent-emerald-600 focus:ring-emerald-500 dark:border-zinc-700"
+        className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-emerald-600 focus:ring-emerald-500 dark:border-zinc-700"
       />
       <span>{label}</span>
     </label>
@@ -136,7 +136,7 @@ export function Checkbox({
 }
 
 export function inputCls(): string {
-  return "w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition-colors placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:ring-emerald-900/40";
+  return "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:ring-emerald-900/40";
 }
 
 export function Paso({
@@ -149,15 +149,15 @@ export function Paso({
   n: number;
 }) {
   return (
-    <div className="mb-6 flex items-start gap-4">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-base font-bold text-white shadow-md shadow-emerald-600/25">
+    <div className="mb-6 flex items-start gap-3.5">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-sm font-black text-white shadow-xs">
         {n}
       </div>
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-zinc-50">
           {titulo}
         </h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">{descripcion}</p>
+        <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-0.5">{descripcion}</p>
       </div>
     </div>
   );

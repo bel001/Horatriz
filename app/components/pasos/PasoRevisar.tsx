@@ -48,16 +48,18 @@ export function PasoRevisar({
       )}
 
       {/* Banner Prominente con Botón Directo */}
-      <Card className="border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 via-white to-teal-50 p-4 shadow-sm dark:border-emerald-800 dark:from-emerald-950/40 dark:via-zinc-900 dark:to-teal-950/30">
+      <Card className="border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-950 dark:bg-emerald-950/30">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-start gap-2.5">
-            <span className="text-2xl shrink-0">✅</span>
+          <div className="flex items-start gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">
+              ✓
+            </span>
             <div>
-              <h4 className="text-sm font-black text-emerald-900 dark:text-emerald-100">
+              <h4 className="text-sm font-black text-slate-900 dark:text-emerald-100">
                 ¡Se detectaron {validas} clases válidas correctamente!
               </h4>
-              <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-0.5">
-                No necesitas editar nada en la tabla de abajo a menos que veas un dato incorrecto o resaltado en ámbar.
+              <p className="text-xs text-slate-600 dark:text-zinc-300 mt-0.5 font-medium">
+                No necesitas editar nada en la tabla a menos que veas una casilla resaltada en ámbar.
               </p>
             </div>
           </div>
@@ -65,9 +67,9 @@ export function PasoRevisar({
             variant="primary"
             disabled={validas === 0}
             onClick={onContinuar}
-            className="w-full sm:w-auto text-xs py-2.5 px-4 font-black shadow-md shrink-0"
+            className="w-full sm:w-auto text-xs py-2.5 px-4 font-bold shrink-0"
           >
-            🟢 Todo se ve bien ➔ Generar Horario ({validas} clases)
+            Todo se ve bien ➔ Ver mi Horario ({validas} clases)
           </Btn>
         </div>
       </Card>
