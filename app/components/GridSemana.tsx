@@ -107,7 +107,7 @@ export function GridSemana({
   gruposPorCurso?: Record<string, GrupoProf[]>;
   mostrarHuecos?: boolean;
 }) {
-  const [verSemanaCompleta, setVerSemanaCompleta] = useState(false);
+  const [verSemanaCompleta, setVerSemanaCompleta] = useState(true);
   const [formato12h, setFormato12h] = useState(false);
 
   useEffect(() => {
