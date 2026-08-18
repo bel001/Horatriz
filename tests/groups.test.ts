@@ -165,4 +165,19 @@ describe("agruparEnCursos", () => {
     expect(numeroDeGrupo(grupos, de("2"))).toBe(2);
     expect(numeroDeGrupo(grupos, de("2"))).not.toBe(1);
   });
+
+  it("fusiona automáticamente horarios del mismo curso agregados en múltiples tandas", () => {
+    const sesionesTanda1 = [
+      sesion({ codigo: "CEMP-112", curso: "Matemática Básica", tipo: "T", nrc: "1001", dia: "LUN" }),
+    ];
+    const sesionesTanda2 = [
+      sesion({ codigo: "", curso: "Matematica Basica", tipo: "T", nrc: "1002", dia: "MAR" }),
+      sesion({ codigo: "CEMP-112", curso: "", tipo: "P", nrc: "1003", dia: "VIE" }),
+    ];
+    const { cursos } = agruparEnCursos([...sesionesTanda1, ...sesionesTanda2]);
+    expect(cursos).toHaveLength(1);
+    expect(cursos[0].nombre).toBe("Matemática Básica");
+    expect(cursos[0].codigo).toBe("CEMP-112");
+    expect(cursos[0].opciones).toHaveLength(3);
+  });
 });

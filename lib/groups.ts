@@ -12,30 +12,54 @@ export interface ResultadoAgrupacion {
   sesionesIgnoradas: number;
 }
 
+function normKey(str: string): string {
+  return str
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 export function agruparEnCursos(sesiones: Sesion[]): ResultadoAgrupacion {
-  const mapa = new Map<string, GrupoCurso>();
+  const mapaCursos: GrupoCurso[] = [];
+  const indexByCodigo = new Map<string, GrupoCurso>();
+  const indexByNombre = new Map<string, GrupoCurso>();
   let opcionesSinLiga = 0;
   let sesionesIgnoradas = 0;
 
   for (const s of sesiones) {
-    const claveCurso = (s.codigo || s.curso || "").trim().toLowerCase();
-    if (!claveCurso) {
+    const codKey = s.codigo ? normKey(s.codigo) : "";
+    const nomKey = s.curso ? normKey(s.curso) : "";
+
+    if (!codKey && !nomKey) {
       sesionesIgnoradas++;
       continue;
     }
 
-    let grupo = mapa.get(claveCurso);
+    let grupo =
+      (codKey ? indexByCodigo.get(codKey) : undefined) ??
+      (nomKey ? indexByNombre.get(nomKey) : undefined);
+
     if (!grupo) {
       grupo = {
         nombre: s.curso || s.codigo,
         codigo: s.codigo || s.curso,
         opciones: new Map(),
       };
-      mapa.set(claveCurso, grupo);
+      mapaCursos.push(grupo);
     }
-    if (!grupo.nombre || grupo.nombre === grupo.codigo) {
-      grupo.nombre = s.curso || s.codigo || grupo.nombre;
+
+    if (s.codigo && (!grupo.codigo || grupo.codigo === grupo.nombre)) {
+      grupo.codigo = s.codigo;
     }
+    if (s.curso && (!grupo.nombre || grupo.nombre === grupo.codigo)) {
+      grupo.nombre = s.curso;
+    }
+
+    if (codKey) indexByCodigo.set(codKey, grupo);
+    if (grupo.codigo) indexByCodigo.set(normKey(grupo.codigo), grupo);
+    if (nomKey) indexByNombre.set(nomKey, grupo);
+    if (grupo.nombre) indexByNombre.set(normKey(grupo.nombre), grupo);
 
     const claveOpcion = s.idLiga
       ? `id:${s.idLiga}`
@@ -62,7 +86,7 @@ export function agruparEnCursos(sesiones: Sesion[]): ResultadoAgrupacion {
   }
 
   const cursos: Curso[] = [];
-  for (const grupo of mapa.values()) {
+  for (const grupo of mapaCursos) {
     const opciones: Opcion[] = [];
     let n = 0;
     let creditosCurso = 0;
