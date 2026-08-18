@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   },
 };
 
-const temaScript = `(function(){try{var t=localStorage.getItem("horatriz-theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark")}catch(e){}})();`;
+const temaScript = `(function(){try{var t=localStorage.getItem("horatriz-theme");var d=t?t==="dark":false;if(d)document.documentElement.classList.add("dark");else document.documentElement.classList.remove("dark");}catch(e){}})();`;
 
 export default function RootLayout({
   children,
