@@ -38,12 +38,21 @@ export const metadata: Metadata = {
     siteName: "Horatriz",
     locale: "es_PE",
     type: "website",
+    images: [
+      {
+        url: "https://horatriz.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Horatriz - Generador de Horarios Universitarios",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Horatriz - Generador de Horarios Universitarios",
     description:
       "Genera y optimiza tus horarios universitarios sin cruces de forma automática.",
+    images: ["https://horatriz.vercel.app/og-image.png"],
   },
   robots: {
     index: true,
