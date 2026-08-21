@@ -768,18 +768,37 @@ export function PasoCursosResultados({
               )}
             </Card>
           ) : seleccionados.size > 0 ? (
-            <Card className="p-8 text-center space-y-4 border-2 border-amber-200 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 shadow-sm">
-              <span className="text-4xl">😅</span>
-              <div className="space-y-1">
+            <Card className="p-6 text-center space-y-4 border-2 border-amber-300 dark:border-amber-800/80 bg-amber-50/60 dark:bg-amber-950/30 shadow-md">
+              <span className="text-4xl">⚠️</span>
+              <div className="space-y-1.5 max-w-lg mx-auto">
                 <h3 className="text-base font-black text-zinc-900 dark:text-zinc-100">
-                  No encontramos combinación con esos filtros o cruces
+                  No hay horarios disponibles que cumplan el 100% de tus preferencias
                 </h3>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
-                  Tus asignaturas seleccionadas tienen solapamiento de horas entre sus grupos o tus reglas de preferencia están descartando las opciones.
+                <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                  Tus asignaturas seleccionadas colisionan entre sí o tus reglas de preferencia activas (turno, días libres o docentes fijados) están descartando todas las opciones posibles.
                 </p>
               </div>
 
-              {/* Botón de Restablecer Filtros */}
+              {/* Sugerencias de solución rápida */}
+              <div className="rounded-xl bg-white p-4 dark:bg-zinc-900 text-left text-xs space-y-2 border border-amber-200 dark:border-zinc-800 max-w-lg mx-auto shadow-xs">
+                <p className="font-black text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+                  <span>💡</span> Razones más comunes:
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-zinc-700 dark:text-zinc-300">
+                  {prefs.restricciones.sinDias.length > 0 && (
+                    <li>Tienes marcados días prohibidos ({prefs.restricciones.sinDias.join(", ")}).</li>
+                  )}
+                  {prefs.restricciones.horaMax > 0 && (
+                    <li>Tienes una hora máxima de salida configurada.</li>
+                  )}
+                  {Object.keys(fijados).length > 0 && (
+                    <li>Tienes opciones fijadas (📌) para algún curso que entra en cruce.</li>
+                  )}
+                  <li>Los grupos de tus cursos seleccionados se cruzan en el mismo horario.</li>
+                </ul>
+              </div>
+
+              {/* Botones de Acción */}
               <div className="pt-1 flex flex-wrap justify-center gap-2">
                 <Btn
                   variant="primary"
@@ -797,17 +816,8 @@ export function PasoCursosResultados({
                   }}
                   className="py-2.5 px-5 font-black text-xs shadow-md"
                 >
-                  🔄 Restablecer filtros recomendados
+                  🔄 Restablecer todas las preferencias
                 </Btn>
-              </div>
-
-              <div className="rounded-xl bg-white p-4 dark:bg-zinc-900 text-left text-xs space-y-2 border border-zinc-200 dark:border-zinc-800">
-                <p className="font-bold text-zinc-800 dark:text-zinc-200">💡 Sugerencias rápidas:</p>
-                <ul className="list-disc list-inside space-y-1 text-zinc-600 dark:text-zinc-300">
-                  <li><strong>Desmarca 1 curso</strong> en la columna izquierda para saber cuál asignatura genera el choque de horario.</li>
-                  <li>Revisa en la pestaña <strong>Preferencias & Bloques</strong> si tienes límites rígidos de horas o días libres.</li>
-                  <li>Si tenías una opción fijada (📌), asegúrate de tenerla en <em>Explorar todas las opciones</em>.</li>
-                </ul>
               </div>
             </Card>
           ) : (

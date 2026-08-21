@@ -248,7 +248,7 @@ describe("puntuarHorario", () => {
     expect(p1).toBeGreaterThan(50);
   });
 
-  it("activa flexibilización por fuerza mayor y genera advertencias cuando las restricciones estrictas bloquearían todo", () => {
+  it("respeta estrictamente las restricciones del usuario y devuelve 0 resultados para mostrar la tarjeta explicativa si nada coincide", () => {
     const sesiones = [
       s({ codigo: "A", curso: "Curso A", tipo: "T", dia: "VIE", inicio: 7 * 60, fin: 9 * 60, esLleno: true }),
     ];
@@ -267,9 +267,6 @@ describe("puntuarHorario", () => {
 
     const res = generarHorarios(cursos, prefsEstrictas);
 
-    expect(res.flexibilizado).toBe(true);
-    expect(res.horarios.length).toBeGreaterThan(0);
-    expect(res.horarios[0].advertencias).toBeDefined();
-    expect(res.horarios[0].advertencias?.length).toBeGreaterThan(0);
+    expect(res.horarios.length).toBe(0);
   });
 });

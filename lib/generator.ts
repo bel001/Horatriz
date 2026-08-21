@@ -172,64 +172,6 @@ export function generarHorarios(
 
   paso(0);
 
-  // Si con las restricciones estrictas no se encontró NINGÚN horario, pero hay restricciones activadas,
-  // realizamos una búsqueda de fuerza mayor flexibilizando las reglas estrictas para asegurar que se muestren los cursos completos.
-  const tieneRestriccionesActivas =
-    prefs.restricciones.sinTurnosLlenos ||
-    prefs.restricciones.sinDias.length > 0 ||
-    prefs.restricciones.horaMax > 0 ||
-    prefs.restricciones.maxHorasDia > 0 ||
-    (prefs.restricciones.bloquesPersonales?.length ?? 0) > 0;
-
-  if (optimos.length === 0 && tieneRestriccionesActivas) {
-    flexibilizado = true;
-    if (prefs.restricciones.sinTurnosLlenos) restriccionesRelajadas.push("Se permitieron turnos o vacantes llenas");
-    if (prefs.restricciones.sinDias.length > 0) restriccionesRelajadas.push("Se asignaron clases en días marcados como libres");
-    if (prefs.restricciones.horaMax > 0) restriccionesRelajadas.push("Se excedió la hora tope de salida");
-    if (prefs.restricciones.maxHorasDia > 0) restriccionesRelajadas.push("Se excedió el límite de horas por día");
-    if ((prefs.restricciones.bloquesPersonales?.length ?? 0) > 0) restriccionesRelajadas.push("Se permitieron cruces con bloques personales");
-
-    const pasoRelajado = (idx: number): boolean => {
-      if (Date.now() - t0 > maxMs) return false;
-      if (idx === ordenados.length) {
-        considerados++;
-        const cuadro = ruta.map((h) => h);
-        const { score, metricas } = puntuarHorario(cuadro, prefs);
-        optimos.push({ horario: cuadro, score, m: metricas });
-        optimos.sort((a, b) => b.score - a.score || b.m.minutosHuecos - a.m.minutosHuecos);
-        if (optimos.length > maxResultados) optimos.length = maxResultados;
-        return true;
-      }
-      const curso = ordenados[idx];
-      let opcionesCurso = curso.opciones.filter((o) => !opcionConflictoInterno(o));
-      const pin = fijados?.[curso.codigo];
-      if (pin) {
-        const fijas = opcionesCurso.filter((o) => o.id === pin);
-        if (fijas.length > 0) opcionesCurso = fijas;
-      }
-      for (const opcion of opcionesCurso) {
-        if (opcionConflicta(opcion, ocupado)) continue;
-        const antes: Record<number, number> = {};
-        for (const s of opcion.sesiones) {
-          const idxDia = DIA_INDEX[s.dia];
-          antes[idxDia] = (ocupado[idxDia] ?? []).length;
-          (ocupado[idxDia] ??= []).push({ inicio: s.inicio, fin: s.fin });
-        }
-        ruta.push({ curso, opcion });
-        const continua = pasoRelajado(idx + 1);
-        ruta.pop();
-        for (const s of opcion.sesiones) {
-          const idxDia = DIA_INDEX[s.dia];
-          (ocupado[idxDia] ?? []).length = antes[idxDia];
-        }
-        if (!continua) return false;
-      }
-      return true;
-    };
-
-    pasoRelajado(0);
-  }
-
   const horarios = optimos.map((o) => {
     const sesiones = o.horario.flatMap((h) => h.opcion.sesiones);
     const diasConClase = o.m.diasConClase;
