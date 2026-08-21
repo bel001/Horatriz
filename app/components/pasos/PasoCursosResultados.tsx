@@ -595,7 +595,14 @@ export function PasoCursosResultados({
             )}
 
             {tabSidebar === "preferencias" && (
-              <PreferenciasPanel prefs={prefs} onChange={setPrefs} />
+              <PreferenciasPanel
+                prefs={prefs}
+                onChange={setPrefs}
+                onAplicarPerfil={() => {
+                  setTabMovilPrincipal("horario");
+                  setResultadoVistoRef(null);
+                }}
+              />
             )}
           </div>
         )}

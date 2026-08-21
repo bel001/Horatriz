@@ -13,15 +13,18 @@ function activo(p: Preferencias, k: keyof Preferencias): boolean {
 export function PreferenciasPanel({
   prefs,
   onChange,
+  onAplicarPerfil,
 }: {
   prefs: Preferencias;
   onChange: (p: Preferencias) => void;
+  onAplicarPerfil?: () => void;
 }) {
   // Estado local para agregar un nuevo bloque personal
   const [nuevoTitulo, setNuevoTitulo] = useState("");
   const [nuevoDia, setNuevoDia] = useState<Dia>("LUN");
   const [nuevoInicio, setNuevoInicio] = useState("14:00");
   const [nuevoFin, setNuevoFin] = useState("18:00");
+  const [perfilAplicado, setPerfilAplicado] = useState<string | null>(null);
 
   const setPeso = (
     k: "pesoHuecos" | "pesoMadrugada" | "pesoDiasLibres" | "pesoDocentes",
@@ -122,18 +125,21 @@ export function PreferenciasPanel({
   };
 
   const aplicarPerfil = (perfil: "compacto" | "equilibrado" | "finde") => {
+    let msg = "";
     if (perfil === "compacto") {
+      msg = "Bloque compacto (3 días)";
       onChange({
         ...prefs,
         pesoHuecos: 1,
         pesoDiasLibres: 1,
-        diasLibresPreferidos: ["MAR", "VIE", "SAB", "DOM"],
+        diasLibresPreferidos: ["VIE", "SAB", "DOM"],
         restricciones: {
           ...prefs.restricciones,
           maxHorasDia: 0,
         },
       });
     } else if (perfil === "equilibrado") {
+      msg = "Distribución equilibrada (4 días)";
       onChange({
         ...prefs,
         pesoHuecos: 1,
@@ -145,6 +151,7 @@ export function PreferenciasPanel({
         },
       });
     } else if (perfil === "finde") {
+      msg = "Opción fin de semana";
       onChange({
         ...prefs,
         pesoHuecos: 1,
@@ -155,6 +162,10 @@ export function PreferenciasPanel({
           maxHorasDia: 0,
         },
       });
+    }
+    setPerfilAplicado(msg);
+    if (onAplicarPerfil) {
+      setTimeout(() => onAplicarPerfil(), 150);
     }
   };
 
