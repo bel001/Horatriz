@@ -21,10 +21,25 @@ function normKey(str: string): string {
 }
 
 export function obtenerClaveLiga(idLiga: string, liga: string): string {
-  const raw = (idLiga || liga || "").trim();
+  const rawId = (idLiga || "").trim();
+  const rawLiga = (liga || "").trim();
+  const raw = rawId || rawLiga;
   if (!raw) return "";
-  const match = raw.match(/\d+/);
-  if (match) return match[0];
+
+  // 1. Extraer número de liga si existe (ej: T1, P1, L1 -> 1; T02, P02 -> 2; 1001 -> 1001)
+  const numMatch = raw.match(/\d+/);
+  if (numMatch) {
+    const num = parseInt(numMatch[0], 10);
+    if (!isNaN(num)) return `${num}`;
+  }
+
+  // 2. Si es una liga por letras (ej: TA, PA, LA -> a; LIGA A -> a)
+  const letterMatch = raw.match(/([A-Za-z]+)/);
+  if (letterMatch) {
+    const code = letterMatch[1].toLowerCase().replace(/^(t|p|l)/, "");
+    if (code) return code;
+  }
+
   return raw.toLowerCase().replace(/\s+/g, "");
 }
 

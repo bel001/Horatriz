@@ -60,6 +60,24 @@ describe("agruparEnCursos", () => {
     }
   });
 
+  it("agrupa ceros iniciales (T01, P01, L01) y letras (TA, PA, LA) universalmente", () => {
+    const sesionesZero = [
+      sesion({ codigo: "MED-101", tipo: "T", idLiga: "T01", nrc: "101" }),
+      sesion({ codigo: "MED-101", tipo: "P", idLiga: "P01", nrc: "102" }),
+    ];
+    const resZero = agruparEnCursos(sesionesZero);
+    expect(resZero.cursos[0].opciones).toHaveLength(1);
+    expect(resZero.cursos[0].opciones[0].sesiones).toHaveLength(2);
+
+    const sesionesLetra = [
+      sesion({ codigo: "DER-202", tipo: "T", idLiga: "TA", nrc: "201" }),
+      sesion({ codigo: "DER-202", tipo: "P", idLiga: "PA", nrc: "202" }),
+    ];
+    const resLetra = agruparEnCursos(sesionesLetra);
+    expect(resLetra.cursos[0].opciones).toHaveLength(1);
+    expect(resLetra.cursos[0].opciones[0].sesiones).toHaveLength(2);
+  });
+
   it("crea dos opciones cuando hay dos ID LIGA distintos", () => {
     const sesiones = [
       sesion({ codigo: "CEMP113", tipo: "T", idLiga: "1001", nrc: "80123", dia: "LUN" }),
