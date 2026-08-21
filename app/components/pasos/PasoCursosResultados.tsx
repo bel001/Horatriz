@@ -556,22 +556,24 @@ export function PasoCursosResultados({
                                           value={profVal}
                                           onChange={(e) => {
                                             const val = e.target.value;
-                                            setDocPref((prev) => {
-                                              const next = {
-                                                ...prev,
-                                                [curso.codigo]: {
-                                                  ...(prev[curso.codigo] ?? {}),
-                                                  [tipo]: val,
-                                                },
-                                              };
-                                              setPrefs({
-                                                ...prefs,
-                                                pesoDocentes: 1,
-                                                docentesPorCurso: next,
-                                              });
-                                              setIdxSeleccionado(0);
-                                              return next;
+                                            const nextDocPref = {
+                                              ...docPref,
+                                              [curso.codigo]: {
+                                                ...(docPref[curso.codigo] ?? {}),
+                                                [tipo]: val,
+                                              },
+                                            };
+                                            setDocPref(nextDocPref);
+                                            setFijados((prev) => ({
+                                              ...prev,
+                                              [curso.codigo]: "",
+                                            }));
+                                            setPrefs({
+                                              ...prefs,
+                                              pesoDocentes: 1,
+                                              docentesPorCurso: nextDocPref,
                                             });
+                                            setIdxSeleccionado(0);
                                           }}
                                         >
                                           <option value="">Cualquiera</option>

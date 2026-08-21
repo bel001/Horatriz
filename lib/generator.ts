@@ -1,6 +1,6 @@
 import type { Curso, Dia, Horario, Opcion, Preferencias, ResultadoGeneracion, Restricciones } from "./model";
 import { DIA_INDEX } from "./parser";
-import { puntuarHorario, calcularAdvertencias } from "./scoring";
+import { puntuarHorario, calcularAdvertencias, buscarDocenteEsperado } from "./scoring";
 import type { MetricasHorario } from "./scoring";
 
 export interface GenerarOpciones {
@@ -129,12 +129,26 @@ export function generarHorarios(
       pushMejor();
       return true;
     }
+
     const curso = ordenados[idx];
     let opcionesCurso = curso.opciones.filter((o) => !opcionConflictoInterno(o));
     const pin = fijados?.[curso.codigo];
     if (pin) {
       const fijas = opcionesCurso.filter((o) => o.id === pin);
       if (fijas.length > 0) opcionesCurso = fijas;
+    }
+
+    const porCursoDoc = prefs.docentesPorCurso ?? {};
+    if (Object.keys(porCursoDoc).length > 0) {
+      const conDocente = opcionesCurso.filter((o) =>
+        o.sesiones.every((s) => {
+          const esp = buscarDocenteEsperado(porCursoDoc, s);
+          return esp ? s.docente.toLowerCase().trim().includes(esp.toLowerCase().trim()) : true;
+        })
+      );
+      if (conDocente.length > 0) {
+        opcionesCurso = conDocente;
+      }
     }
     for (const opcion of opcionesCurso) {
       if (opcionConflicta(opcion, ocupado)) {
