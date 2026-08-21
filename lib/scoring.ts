@@ -11,6 +11,7 @@ export interface MetricasHorario {
   diasConClase: Dia[];
   diasLibresLogrados: number;
   coincidenciasDocente: number;
+  coincidenciasEspecificas: number;
   totalSesiones: number;
   totalCreditos: number;
   docentesRepetidos: { docente: string; cursos: string[]; dias: Dia[] }[];
@@ -66,11 +67,15 @@ export function metricasHorario(cuadro: Horario[], prefs: Preferencias): Metrica
   const preferidosDoc = prefs.docentesPreferidos.map((d) => d.toLowerCase().trim());
   const porCurso = prefs.docentesPorCurso ?? {};
   let coincidenciasDocente = 0;
+  let coincidenciasEspecificas = 0;
   for (const s of sesiones) {
     const docNorm = s.docente.toLowerCase().trim();
     if (preferidosDoc.some((p) => p && docNorm.includes(p))) coincidenciasDocente++;
     const esperado = porCurso[s.codigo]?.[s.tipo];
-    if (esperado && docNorm.includes(esperado.toLowerCase().trim())) coincidenciasDocente++;
+    if (esperado && docNorm.includes(esperado.toLowerCase().trim())) {
+      coincidenciasDocente++;
+      coincidenciasEspecificas++;
+    }
   }
 
   const docentesRepetidos: { docente: string; cursos: string[]; dias: Dia[] }[] = [];
@@ -101,6 +106,7 @@ export function metricasHorario(cuadro: Horario[], prefs: Preferencias): Metrica
     diasConClase,
     diasLibresLogrados,
     coincidenciasDocente,
+    coincidenciasEspecificas,
     totalSesiones: sesiones.length,
     totalCreditos,
     docentesRepetidos,

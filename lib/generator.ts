@@ -103,7 +103,12 @@ export function generarHorarios(
     const cuadro = ruta.map((h) => h);
     const { score, metricas } = puntuarHorario(cuadro, prefs);
     optimos.push({ horario: cuadro, score, m: metricas });
-    optimos.sort((a, b) => b.score - a.score || b.m.minutosHuecos - a.m.minutosHuecos);
+    optimos.sort(
+      (a, b) =>
+        (b.m.coincidenciasEspecificas ?? 0) - (a.m.coincidenciasEspecificas ?? 0) ||
+        b.score - a.score ||
+        a.m.minutosHuecos - b.m.minutosHuecos
+    );
     if (optimos.length > maxResultados) optimos.length = maxResultados;
     if (onProgreso) {
       const ahora = Date.now();

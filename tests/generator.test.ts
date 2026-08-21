@@ -53,6 +53,24 @@ describe("generarHorarios", () => {
     expect(res.horarios).toHaveLength(2);
   });
 
+  it("posiciona siempre en la Opción #1 al horario con el docente preferido por curso", () => {
+    const sesiones = [
+      s({ codigo: "TESIS", curso: "Tesis I", tipo: "T", idLiga: "1", nrc: "5065", docente: "CIEZA MOSTACERO", dia: "JUE", inicio: 14 * 60, fin: 17 * 60 }),
+      s({ codigo: "TESIS", curso: "Tesis I", tipo: "T", idLiga: "2", nrc: "5066", docente: "GUTIERREZ GUTIERREZ JORGE LUIS", dia: "JUE", inicio: 18 * 60, fin: 21 * 60 }),
+    ];
+    const { cursos } = agruparEnCursos(sesiones);
+    const prefsConProf: Preferencias = {
+      ...PREF_VACIO,
+      pesoDocentes: 1,
+      docentesPorCurso: {
+        TESIS: { T: "GUTIERREZ GUTIERREZ JORGE LUIS" },
+      },
+    };
+    const res = generarHorarios(cursos, prefsConProf);
+    expect(res.horarios).toHaveLength(2);
+    expect(res.horarios[0].cuadro[0].opcion.docente).toContain("GUTIERREZ GUTIERREZ JORGE LUIS");
+  });
+
   it("permite ligas vacías (no descarta por liga desajustada)", () => {
     const sesiones = [
       s({ codigo: "A001", tipo: "T", idLiga: "", nrc: "100001", dia: "LUN", inicio: 8 * 60, fin: 10 * 60 }),
