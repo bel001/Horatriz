@@ -221,6 +221,18 @@ export function profesDeGrupoCompatibles(
   return [...new Set(comp.flatMap((g) => g.profs[tipo] ?? []))];
 }
 
+export function todosLosProfesDeTipo(curso: Curso, tipo: Tipo): string[] {
+  const profsSet = new Set<string>();
+  for (const op of curso.opciones) {
+    for (const s of op.sesiones) {
+      if (s.tipo === tipo && s.docente && s.docente.trim()) {
+        profsSet.add(s.docente.trim());
+      }
+    }
+  }
+  return [...profsSet].sort((a, b) => a.localeCompare(b, "es"));
+}
+
 export function numeroDeGrupo(grupos: GrupoProf[], s: Sesion): number {
   const clave = (s.idLiga || s.liga || s.nrc || "").trim() || "G";
   const i = grupos.findIndex((g) => g.clave === clave);

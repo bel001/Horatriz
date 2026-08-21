@@ -9,7 +9,7 @@ import type {
 import { SIN_RESTRICCIONES, TIPO_LABEL } from "@/lib/model";
 import { fmtDuracion } from "@/lib/time";
 import type { GrupoProf } from "@/lib/groups";
-import { gruposDeCurso, profesDeGrupoCompatibles } from "@/lib/groups";
+import { gruposDeCurso, profesDeGrupoCompatibles, todosLosProfesDeTipo } from "@/lib/groups";
 import { toPng } from "html-to-image";
 import { descargarIcs } from "@/lib/ical";
 import { Badge, Btn, Card, Checkbox, Paso, inputCls } from "../ui";
@@ -157,6 +157,23 @@ export function PasoCursosResultados({
 
     return noEncontrados;
   }, [resultado, prefs.docentesPorCurso, cursos]);
+
+  const handleDocenteChange = (codigo: string, tipo: Tipo, docenteNombre: string) => {
+    const nextDocPref = {
+      ...docPref,
+      [codigo]: {
+        ...(docPref[codigo] ?? {}),
+        [tipo]: docenteNombre,
+      },
+    };
+    setDocPref(nextDocPref);
+    setPrefs({
+      ...prefs,
+      pesoDocentes: 1,
+      docentesPorCurso: nextDocPref,
+    });
+    setIdxSeleccionado(0);
+  };
 
   const horariosFiltrados = resultado?.horarios ?? [];
 
@@ -544,7 +561,7 @@ export function PasoCursosResultados({
                               {tiposPresentes.length > 0 && (
                                 <div className="grid gap-2 sm:grid-cols-2 text-xs">
                                   {tiposPresentes.map((tipo) => {
-                                    const profes = profesDeGrupoCompatibles(grupos, docPref[curso.codigo] ?? {}, tipo);
+                                    const profes = todosLosProfesDeTipo(curso, tipo);
                                     const profVal = docPref[curso.codigo]?.[tipo] ?? "";
                                     return (
                                       <div key={tipo}>
@@ -554,25 +571,7 @@ export function PasoCursosResultados({
                                         <select
                                           className={`${inputCls()} py-0.5 text-[11px]`}
                                           value={profVal}
-                                          onChange={(e) => {
-                                            const val = e.target.value;
-                                            setDocPref((prev) => {
-                                              const next = {
-                                                ...prev,
-                                                [curso.codigo]: {
-                                                  ...(prev[curso.codigo] ?? {}),
-                                                  [tipo]: val,
-                                                },
-                                              };
-                                              setPrefs({
-                                                ...prefs,
-                                                pesoDocentes: 1,
-                                                docentesPorCurso: next,
-                                              });
-                                              setIdxSeleccionado(0);
-                                              return next;
-                                            });
-                                          }}
+                                          onChange={(e) => handleDocenteChange(curso.codigo, tipo, e.target.value)}
                                         >
                                           <option value="">Cualquiera</option>
                                           {profes.map((p) => (
