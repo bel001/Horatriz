@@ -124,6 +124,40 @@ export function PasoCursosResultados({
     .filter((c) => seleccionados.has(c.codigo))
     .reduce((sum, c) => sum + (creditos[c.codigo] ?? c.creditos ?? 0), 0);
 
+  const profesoresNoCoincidentes = useMemo(() => {
+    if (!resultado || resultado.horarios.length === 0) return [];
+    const porCurso = prefs.docentesPorCurso ?? {};
+    const noEncontrados: { curso: string; tipo: Tipo; docente: string }[] = [];
+
+    const todasSesionesGeneradas = resultado.horarios.flatMap((h) => h.sesiones);
+
+    for (const [cod, mapaT] of Object.entries(porCurso)) {
+      const cursoObj = cursos.find((c) => c.codigo === cod);
+      const nombreCurso = cursoObj?.nombre || cod;
+
+      for (const [tipoKey, profNombre] of Object.entries(mapaT)) {
+        if (profNombre && profNombre.trim()) {
+          const tipo = tipoKey as Tipo;
+          const existeEnResultado = todasSesionesGeneradas.some(
+            (s) =>
+              (s.codigo === cod || s.curso === cod) &&
+              s.tipo === tipo &&
+              s.docente.toLowerCase().trim().includes(profNombre.toLowerCase().trim())
+          );
+          if (!existeEnResultado) {
+            noEncontrados.push({
+              curso: nombreCurso,
+              tipo,
+              docente: profNombre,
+            });
+          }
+        }
+      }
+    }
+
+    return noEncontrados;
+  }, [resultado, prefs.docentesPorCurso, cursos]);
+
   const horariosFiltrados = resultado?.horarios ?? [];
 
   const horarioActual = horariosFiltrados[idxSeleccionado] ?? horariosFiltrados[0];
@@ -520,15 +554,25 @@ export function PasoCursosResultados({
                                         <select
                                           className={`${inputCls()} py-0.5 text-[11px]`}
                                           value={profVal}
-                                          onChange={(e) =>
-                                            setDocPref((prev) => ({
-                                              ...prev,
-                                              [curso.codigo]: {
-                                                ...(prev[curso.codigo] ?? {}),
-                                                [tipo]: e.target.value,
-                                              },
-                                            }))
-                                          }
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            setDocPref((prev) => {
+                                              const next = {
+                                                ...prev,
+                                                [curso.codigo]: {
+                                                  ...(prev[curso.codigo] ?? {}),
+                                                  [tipo]: val,
+                                                },
+                                              };
+                                              setPrefs({
+                                                ...prefs,
+                                                pesoDocentes: 1,
+                                                docentesPorCurso: next,
+                                              });
+                                              setIdxSeleccionado(0);
+                                              return next;
+                                            });
+                                          }}
                                         >
                                           <option value="">Cualquiera</option>
                                           {profes.map((p) => (
@@ -610,6 +654,30 @@ export function PasoCursosResultados({
 
         {/* COLUMNA DERECHA (Panel Principal - Opciones Rankeadas + Grid Semanal) */}
         <div className={`space-y-4 min-w-0 max-w-full ${maximizado ? "lg:col-span-12" : "lg:col-span-8"} ${tabMovilPrincipal === "horario" ? "block" : "hidden lg:block"}`}>
+          {/* Banner de Aviso: Docente Solicitado No Disponible en las Opciones Generadas */}
+          {profesoresNoCoincidentes.length > 0 && (
+            <div className="rounded-2xl border-2 border-amber-400/80 bg-amber-50 p-4 dark:border-amber-700/60 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 space-y-2 shadow-sm animate-fade-in">
+              <div className="flex items-start gap-2.5">
+                <span className="text-xl shrink-0">⚠️</span>
+                <div>
+                  <h4 className="font-extrabold text-xs uppercase tracking-wide text-amber-900 dark:text-amber-100">
+                    Aviso de Docente Preferido No Disponible en el Horario
+                  </h4>
+                  <p className="text-xs mt-0.5 opacity-90 leading-relaxed">
+                    No fue posible incluir al docente solicitado en las combinaciones generadas debido a cruces de horario o vacantes agotadas:
+                  </p>
+                  <ul className="mt-1.5 list-disc list-inside text-xs font-bold space-y-0.5 text-amber-800 dark:text-amber-300">
+                    {profesoresNoCoincidentes.map((p, i) => (
+                      <li key={i}>
+                        <strong>{p.curso} ({TIPO_LABEL[p.tipo]}):</strong> {p.docente}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Banner de Fuerza Mayor (Restricciones Flexibilizadas) */}
           {resultado && resultado.flexibilizado && (
             <div className="rounded-2xl border-2 border-amber-400/80 bg-amber-50 p-4 dark:border-amber-700/60 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 space-y-2 shadow-sm">

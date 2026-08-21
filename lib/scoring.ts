@@ -145,6 +145,30 @@ export function puntuarHorario(cuadro: Horario[], prefs: Preferencias): { score:
     score = 100 * (1 - h);
   }
 
+  const sesiones = cuadro.flatMap((h) => h.opcion.sesiones);
+  const porCursoDoc = prefs.docentesPorCurso ?? {};
+  let totalEsperadosDoc = 0;
+  let coincidenciasEspecificas = 0;
+  for (const [cod, mapaT] of Object.entries(porCursoDoc)) {
+    for (const [tipo, prof] of Object.entries(mapaT)) {
+      if (prof && prof.trim()) {
+        totalEsperadosDoc++;
+        const match = sesiones.some(
+          (s: Sesion) =>
+            (s.codigo === cod || s.curso === cod) &&
+            s.tipo === tipo &&
+            s.docente.toLowerCase().trim().includes(prof.toLowerCase().trim())
+        );
+        if (match) coincidenciasEspecificas++;
+      }
+    }
+  }
+
+  if (totalEsperadosDoc > 0) {
+    const ratioDocentes = coincidenciasEspecificas / totalEsperadosDoc;
+    score += ratioDocentes * 45;
+  }
+
   if (prefs.perfilAcademico === "compacto") {
     if (m.diasConClase.length <= 3) {
       score += 40;
