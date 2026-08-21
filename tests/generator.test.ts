@@ -71,6 +71,28 @@ describe("generarHorarios", () => {
     expect(res.horarios[0].cuadro[0].opcion.docente).toContain("GUTIERREZ GUTIERREZ JORGE LUIS");
   });
 
+  it("filtra docentes preferidos en cursos multicomponente (T+P+L) sin importar el código o formato del curso", () => {
+    const sesiones = [
+      s({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "T", idLiga: "1", nrc: "5054", docente: "HUAPAYA ESCOBEDO JORGE LORENZO", dia: "LUN", inicio: 16 * 60, fin: 18 * 60 }),
+      s({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "P", idLiga: "1", nrc: "5055", docente: "GUIJON GUERRA CARLOS", dia: "LUN", inicio: 18 * 60, fin: 20 * 60 }),
+      s({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "L", idLiga: "1", nrc: "5056", docente: "GUIJON GUERRA CARLOS", dia: "LUN", inicio: 20 * 60, fin: 22 * 60 }),
+      s({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "T", idLiga: "2", nrc: "9764", docente: "ALVAREZ FLORES ROBERTO", dia: "MAR", inicio: 16 * 60, fin: 18 * 60 }),
+      s({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "P", idLiga: "2", nrc: "9765", docente: "GUIJON GUERRA CARLOS", dia: "MAR", inicio: 18 * 60, fin: 20 * 60 }),
+      s({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "L", idLiga: "2", nrc: "9766", docente: "GUIJON GUERRA CARLOS", dia: "MAR", inicio: 20 * 60, fin: 22 * 60 }),
+    ];
+    const { cursos } = agruparEnCursos(sesiones);
+    const prefsDoc: Preferencias = {
+      ...PREF_VACIO,
+      pesoDocentes: 1,
+      docentesPorCurso: {
+        "ICSI-678": { T: "HUAPAYA ESCOBEDO JORGE LORENZO" },
+      },
+    };
+    const res = generarHorarios(cursos, prefsDoc);
+    expect(res.horarios).toHaveLength(1);
+    expect(res.horarios[0].cuadro[0].opcion.sesiones[0].docente).toContain("HUAPAYA ESCOBEDO");
+  });
+
   it("permite ligas vacías (no descarta por liga desajustada)", () => {
     const sesiones = [
       s({ codigo: "A001", tipo: "T", idLiga: "", nrc: "100001", dia: "LUN", inicio: 8 * 60, fin: 10 * 60 }),
