@@ -39,6 +39,27 @@ describe("agruparEnCursos", () => {
     expect(opcionesSinLiga).toBe(0);
   });
 
+  it("agrupa correctamente T1, P1, L1 en la misma liga (ejemplo GEST PROYECT SIST DE INFORMAC)", () => {
+    const sesiones = [
+      sesion({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "T", idLiga: "T1", liga: "P1 L1", nrc: "5054", dia: "LUN" }),
+      sesion({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "P", idLiga: "P1", liga: "T1 L1", nrc: "5055", dia: "LUN" }),
+      sesion({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "L", idLiga: "L1", liga: "T1 P1", nrc: "5056", dia: "LUN" }),
+      sesion({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "L", idLiga: "L1", liga: "T1 P1", nrc: "9763", dia: "MAR" }),
+      sesion({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "T", idLiga: "T2", liga: "P2 L2", nrc: "9764", dia: "MAR" }),
+      sesion({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "P", idLiga: "P2", liga: "T2 L2", nrc: "9765", dia: "MAR" }),
+      sesion({ codigo: "ICSI-678", curso: "GEST PROYECT SIST DE INFORMAC", tipo: "L", idLiga: "L2", liga: "T2 P2", nrc: "9766", dia: "MAR" }),
+    ];
+    const { cursos } = agruparEnCursos(sesiones);
+    expect(cursos).toHaveLength(1);
+    expect(cursos[0].opciones).toHaveLength(3);
+    for (const opt of cursos[0].opciones) {
+      const tipos = opt.sesiones.map((s) => s.tipo);
+      expect(tipos).toContain("T");
+      expect(tipos).toContain("P");
+      expect(tipos).toContain("L");
+    }
+  });
+
   it("crea dos opciones cuando hay dos ID LIGA distintos", () => {
     const sesiones = [
       sesion({ codigo: "CEMP113", tipo: "T", idLiga: "1001", nrc: "80123", dia: "LUN" }),

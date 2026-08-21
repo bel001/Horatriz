@@ -20,6 +20,14 @@ function normKey(str: string): string {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+export function obtenerClaveLiga(idLiga: string, liga: string): string {
+  const raw = (idLiga || liga || "").trim();
+  if (!raw) return "";
+  const match = raw.match(/\d+/);
+  if (match) return match[0];
+  return raw.toLowerCase().replace(/\s+/g, "");
+}
+
 export function agruparEnCursos(sesiones: Sesion[]): ResultadoAgrupacion {
   const mapaCursos: GrupoCurso[] = [];
   const indexByCodigo = new Map<string, GrupoCurso>();
@@ -61,13 +69,12 @@ export function agruparEnCursos(sesiones: Sesion[]): ResultadoAgrupacion {
     if (nomKey) indexByNombre.set(nomKey, grupo);
     if (grupo.nombre) indexByNombre.set(normKey(grupo.nombre), grupo);
 
-    const claveOpcion = s.idLiga
-      ? `id:${s.idLiga}`
-      : s.liga
-        ? `liga:${s.liga}`
-        : s.nrc
-          ? `nrc:${s.nrc}`
-          : `spin:${s.id}`;
+    const numLiga = obtenerClaveLiga(s.idLiga, s.liga);
+    const claveOpcion = numLiga
+      ? `liga:${numLiga}`
+      : s.nrc
+        ? `nrc:${s.nrc}`
+        : `spin:${s.id}`;
 
     let opcion = grupo.opciones.get(claveOpcion);
     if (!opcion) {
