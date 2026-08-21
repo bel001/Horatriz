@@ -114,6 +114,7 @@ export interface Preferencias {
   creditosMax: number;
   restricciones: Restricciones;
   docentesPorCurso: Record<string, Partial<Record<Tipo, string>>>;
+  perfilAcademico?: "compacto" | "equilibrado" | "finde" | null;
 }
 
 export const DEFAULT_PREFERENCIAS: Preferencias = {

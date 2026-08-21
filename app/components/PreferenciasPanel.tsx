@@ -126,10 +126,14 @@ export function PreferenciasPanel({
 
   const aplicarPerfil = (perfil: "compacto" | "equilibrado" | "finde") => {
     let msg = "";
-    if (perfil === "compacto") {
+    const esActivoMismo = prefs.perfilAcademico === perfil;
+    const nuevoPerfil = esActivoMismo ? null : perfil;
+
+    if (nuevoPerfil === "compacto") {
       msg = "Bloque compacto (3 días)";
       onChange({
         ...prefs,
+        perfilAcademico: "compacto",
         pesoHuecos: 1,
         pesoDiasLibres: 1,
         diasLibresPreferidos: ["VIE", "SAB", "DOM"],
@@ -138,10 +142,11 @@ export function PreferenciasPanel({
           maxHorasDia: 0,
         },
       });
-    } else if (perfil === "equilibrado") {
+    } else if (nuevoPerfil === "equilibrado") {
       msg = "Distribución equilibrada (4 días)";
       onChange({
         ...prefs,
+        perfilAcademico: "equilibrado",
         pesoHuecos: 1,
         pesoDiasLibres: 1,
         diasLibresPreferidos: ["VIE", "SAB", "DOM"],
@@ -150,10 +155,11 @@ export function PreferenciasPanel({
           maxHorasDia: 6,
         },
       });
-    } else if (perfil === "finde") {
+    } else if (nuevoPerfil === "finde") {
       msg = "Opción fin de semana";
       onChange({
         ...prefs,
+        perfilAcademico: "finde",
         pesoHuecos: 1,
         pesoDiasLibres: 1,
         diasLibresPreferidos: ["VIE"],
@@ -162,10 +168,15 @@ export function PreferenciasPanel({
           maxHorasDia: 0,
         },
       });
+    } else {
+      onChange({
+        ...prefs,
+        perfilAcademico: null,
+      });
     }
-    setPerfilAplicado(msg);
+    setPerfilAplicado(nuevoPerfil ? msg : null);
     if (onAplicarPerfil) {
-      setTimeout(() => onAplicarPerfil(), 150);
+      setTimeout(() => onAplicarPerfil(), 100);
     }
   };
 
@@ -199,44 +210,81 @@ export function PreferenciasPanel({
 
       {/* Perfiles de Conveniencia Académica */}
       <Card className="space-y-2.5">
-        <p className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
-          🎯 Perfiles de Conveniencia Académica
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+            🎯 Perfiles de Conveniencia Académica
+          </p>
+          {prefs.perfilAcademico && (
+            <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-800">
+              Perfil Activo
+            </span>
+          )}
+        </div>
         <div className="grid gap-2 text-xs">
           <button
             type="button"
             onClick={() => aplicarPerfil("compacto")}
-            className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-left hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40 transition-colors"
+            className={`flex items-center justify-between rounded-xl border p-2.5 text-left transition-all ${
+              prefs.perfilAcademico === "compacto"
+                ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 ring-2 ring-emerald-500/30"
+                : "border-zinc-200 bg-zinc-50 hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40"
+            }`}
           >
             <div>
               <span className="font-black text-zinc-900 dark:text-zinc-100">🚀 Bloque compacto (3 días)</span>
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Concentra carga en 3 días para liberar 4 días continuos.</p>
             </div>
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Aplicar ➔</span>
+            <span className={`text-xs font-black shrink-0 ${
+              prefs.perfilAcademico === "compacto"
+                ? "text-emerald-700 dark:text-emerald-300 bg-emerald-200 dark:bg-emerald-900 px-2 py-0.5 rounded-md"
+                : "text-emerald-600 dark:text-emerald-400"
+            }`}>
+              {prefs.perfilAcademico === "compacto" ? "✓ Activo" : "Aplicar ➔"}
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() => aplicarPerfil("equilibrado")}
-            className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-left hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40 transition-colors"
+            className={`flex items-center justify-between rounded-xl border p-2.5 text-left transition-all ${
+              prefs.perfilAcademico === "equilibrado"
+                ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 ring-2 ring-emerald-500/30"
+                : "border-zinc-200 bg-zinc-50 hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40"
+            }`}
           >
             <div>
               <span className="font-black text-zinc-900 dark:text-zinc-100">⚖️ Distribución equilibrada (4 días)</span>
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Reduce horas continuas repartiendo carga de Lun a Jue (máx 6h/día).</p>
             </div>
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Aplicar ➔</span>
+            <span className={`text-xs font-black shrink-0 ${
+              prefs.perfilAcademico === "equilibrado"
+                ? "text-emerald-700 dark:text-emerald-300 bg-emerald-200 dark:bg-emerald-900 px-2 py-0.5 rounded-md"
+                : "text-emerald-600 dark:text-emerald-400"
+            }`}>
+              {prefs.perfilAcademico === "equilibrado" ? "✓ Activo" : "Aplicar ➔"}
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() => aplicarPerfil("finde")}
-            className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-left hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40 transition-colors"
+            className={`flex items-center justify-between rounded-xl border p-2.5 text-left transition-all ${
+              prefs.perfilAcademico === "finde"
+                ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 ring-2 ring-emerald-500/30"
+                : "border-zinc-200 bg-zinc-50 hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40"
+            }`}
           >
             <div>
               <span className="font-black text-zinc-900 dark:text-zinc-100">🗓️ Opción fin de semana</span>
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Desplaza talleres al Sábado para desahogar tardes laborables.</p>
             </div>
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Aplicar ➔</span>
+            <span className={`text-xs font-black shrink-0 ${
+              prefs.perfilAcademico === "finde"
+                ? "text-emerald-700 dark:text-emerald-300 bg-emerald-200 dark:bg-emerald-900 px-2 py-0.5 rounded-md"
+                : "text-emerald-600 dark:text-emerald-400"
+            }`}>
+              {prefs.perfilAcademico === "finde" ? "✓ Activo" : "Aplicar ➔"}
+            </span>
           </button>
         </div>
       </Card>

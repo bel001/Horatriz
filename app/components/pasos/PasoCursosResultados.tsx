@@ -599,6 +599,7 @@ export function PasoCursosResultados({
                 prefs={prefs}
                 onChange={setPrefs}
                 onAplicarPerfil={() => {
+                  setIdxSeleccionado(0);
                   setTabMovilPrincipal("horario");
                   setResultadoVistoRef(null);
                 }}

@@ -145,6 +145,28 @@ export function puntuarHorario(cuadro: Horario[], prefs: Preferencias): { score:
     score = 100 * (1 - h);
   }
 
+  if (prefs.perfilAcademico === "compacto") {
+    if (m.diasConClase.length <= 3) {
+      score += 40;
+    } else if (m.diasConClase.length === 4) {
+      score += 15;
+    } else {
+      score -= 25;
+    }
+  } else if (prefs.perfilAcademico === "equilibrado") {
+    if (m.diasConClase.length === 4) {
+      score += 35;
+    } else if (m.diasConClase.length === 3) {
+      score += 20;
+    }
+  } else if (prefs.perfilAcademico === "finde") {
+    if (m.diasConClase.includes("SAB")) {
+      score += 45;
+    } else {
+      score -= 20;
+    }
+  }
+
   if (prefs.creditosMax > 0 && m.totalCreditos > prefs.creditosMax) {
     score *= 0.6;
   } else if (prefs.creditosMin > 0 && m.totalCreditos < prefs.creditosMin) {
