@@ -121,6 +121,43 @@ export function PreferenciasPanel({
     }
   };
 
+  const aplicarPerfil = (perfil: "compacto" | "equilibrado" | "finde") => {
+    if (perfil === "compacto") {
+      onChange({
+        ...prefs,
+        pesoHuecos: 1,
+        pesoDiasLibres: 1,
+        diasLibresPreferidos: ["MAR", "VIE", "SAB", "DOM"],
+        restricciones: {
+          ...prefs.restricciones,
+          maxHorasDia: 0,
+        },
+      });
+    } else if (perfil === "equilibrado") {
+      onChange({
+        ...prefs,
+        pesoHuecos: 1,
+        pesoDiasLibres: 1,
+        diasLibresPreferidos: ["VIE", "SAB", "DOM"],
+        restricciones: {
+          ...prefs.restricciones,
+          maxHorasDia: 6,
+        },
+      });
+    } else if (perfil === "finde") {
+      onChange({
+        ...prefs,
+        pesoHuecos: 1,
+        pesoDiasLibres: 1,
+        diasLibresPreferidos: ["VIE"],
+        restricciones: {
+          ...prefs.restricciones,
+          maxHorasDia: 0,
+        },
+      });
+    }
+  };
+
   return (
     <div className="grid gap-4">
       {/* Indicador del Turno Activo (se configura desde la barra lateral de cursos) */}
@@ -147,6 +184,50 @@ export function PreferenciasPanel({
         <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400">
           💡 Puedes cambiar el turno desde los botones rápidos en la pestaña <strong>Cursos</strong>.
         </p>
+      </Card>
+
+      {/* Perfiles de Conveniencia Académica */}
+      <Card className="space-y-2.5">
+        <p className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+          🎯 Perfiles de Conveniencia Académica
+        </p>
+        <div className="grid gap-2 text-xs">
+          <button
+            type="button"
+            onClick={() => aplicarPerfil("compacto")}
+            className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-left hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40 transition-colors"
+          >
+            <div>
+              <span className="font-black text-zinc-900 dark:text-zinc-100">🚀 Bloque compacto (3 días)</span>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Concentra carga en 3 días para liberar 4 días continuos.</p>
+            </div>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Aplicar ➔</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => aplicarPerfil("equilibrado")}
+            className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-left hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40 transition-colors"
+          >
+            <div>
+              <span className="font-black text-zinc-900 dark:text-zinc-100">⚖️ Distribución equilibrada (4 días)</span>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Reduce horas continuas repartiendo carga de Lun a Jue (máx 6h/día).</p>
+            </div>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Aplicar ➔</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => aplicarPerfil("finde")}
+            className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 text-left hover:bg-emerald-50 hover:border-emerald-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/40 transition-colors"
+          >
+            <div>
+              <span className="font-black text-zinc-900 dark:text-zinc-100">🗓️ Opción fin de semana</span>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Desplaza talleres al Sábado para desahogar tardes laborables.</p>
+            </div>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Aplicar ➔</span>
+          </button>
+        </div>
       </Card>
 
       <Card>

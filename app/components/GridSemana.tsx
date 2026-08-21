@@ -11,10 +11,10 @@ import { numeroDeGrupo } from "@/lib/groups";
 const HORA_INICIO = 6 * 60;
 const HORA_FIN = 22 * 60;
 
-/** Minimum width (px) each day column needs to display legibly */
-const MIN_COL_WIDTH = 120;
+/** Minimum width (px) each day column needs to display legibly on mobile/desktop */
+const MIN_COL_WIDTH = 140;
 /** Width reserved for the time labels column */
-const TIME_COL_WIDTH = 44;
+const TIME_COL_WIDTH = 48;
 
 /** Hook that tracks a container's width via ResizeObserver */
 function useContainerWidth(): [React.RefObject<HTMLDivElement | null>, number] {
@@ -440,51 +440,51 @@ export function GridSemana({
                   const tagGrupo = `${s.tipo}${numGrupo}`; // Ej: T1, T2, P1, P2, L1, L2
                   const iconoTipo = TIPO_ICONO[s.tipo] ?? "";
 
-                  const esMuyCorto = alto < 60;
-                  const esCorto = alto < 95;
+                  const esMuyCorto = alto < 55;
+                  const esCorto = alto < 85;
 
                   return (
                     <div
                       key={s.id}
-                      className={`absolute inset-x-1 z-10 flex flex-col justify-between overflow-hidden rounded-xl border-2 px-2 py-1.5 shadow-md transition-colors hover:z-30 hover:border-white ${
+                      className={`absolute inset-x-0.5 z-10 flex flex-col justify-between overflow-hidden rounded-xl border-2 px-1.5 py-1 shadow-xs transition-colors hover:z-30 hover:border-white ${
                         s.esLleno
                           ? "ring-2 ring-rose-500 border-rose-500 " + colorDeCurso(s.codigo, colores)
                           : colorDeCurso(s.codigo, colores)
                       }`}
-                      style={{ top, height: Math.max(alto - 2, 24) }}
+                      style={{ top, height: Math.max(alto - 2, 26) }}
                       title={`${s.esLleno ? "[TURNO LLENO] " : ""}${s.curso} · ${tagGrupo} ${s.nrc ? "NRC: " + s.nrc + " " : ""}${s.docente ? "· " + s.docente : ""} · ${fmtHora(s.inicio, formato12h)}-${fmtHora(s.fin, formato12h)} · ${s.aula}`}
                     >
-                      <div className="space-y-1">
+                      <div className="space-y-0.5 min-w-0">
                         {/* Banner de Advertencia si está lleno */}
                         {s.esLleno && (
-                          <div className="rounded bg-rose-600 px-1.5 py-0.5 text-center text-[9.5px] font-black uppercase text-white shadow animate-pulse">
+                          <div className="rounded bg-rose-600 px-1 py-0.2 text-center text-[9px] font-black uppercase text-white shadow-xs animate-pulse truncate">
                             ⚠️ Turno Lleno
                           </div>
                         )}
 
                         {/* Fila 1: Nombre del Curso y Tag T1, P1, L1... */}
-                        <div className="flex items-start justify-between gap-1 leading-tight">
-                          <span className="font-black text-[12px] tracking-normal break-words line-clamp-2 uppercase text-white drop-shadow-xs">
+                        <div className="flex items-start justify-between gap-1 leading-tight min-w-0">
+                          <span className="font-black text-[11px] sm:text-[12px] tracking-tight break-words line-clamp-2 uppercase text-white drop-shadow-xs">
                             {s.curso || s.codigo}
                           </span>
                           <span
-                            className="shrink-0 rounded px-1.5 py-0.5 bg-black/75 text-white border border-white/40 text-[10px] font-black tracking-wider shadow-xs"
+                            className="shrink-0 rounded px-1 py-0.2 bg-black/75 text-white border border-white/40 text-[9.5px] font-black tracking-wider shadow-xs"
                             title={`Tipo y Grupo: ${tagGrupo}`}
                           >
                             {iconoTipo} {tagGrupo}
                           </span>
                         </div>
 
-                        {/* Fila 2: NRC (si el alto lo permite) */}
+                        {/* Fila 2: NRC / Sección (si el alto lo permite) */}
                         {!esMuyCorto && s.nrc && (
-                          <div className="text-[10.5px] font-mono font-black text-white/95 leading-tight">
-                            NRC: {s.nrc} {s.seccion ? `(${s.seccion})` : ""}
+                          <div className="text-[10px] font-mono font-black text-white/95 leading-tight truncate">
+                            NRC {s.nrc} {s.seccion ? `(${s.seccion})` : ""}
                           </div>
                         )}
 
                         {/* Fila 3: Docente (si el alto lo permite) */}
                         {!esCorto && (
-                          <div className="text-[11px] font-bold text-white leading-tight truncate pt-0.5">
+                          <div className="text-[10.5px] font-bold text-white leading-tight truncate pt-0.5">
                             👤 {s.docente ? s.docente : "Sin docente"}
                           </div>
                         )}
@@ -494,17 +494,17 @@ export function GridSemana({
                       {(() => {
                         const esVirt = s.esVirtual || !s.aula || s.aula.toUpperCase() === "NINGUNO";
                         return (
-                          <div className="mt-1 flex items-center justify-between border-t border-white/40 pt-1 text-[10.5px] font-black text-white leading-tight shrink-0">
-                            <span className="tabular-nums">⏰ {`${fmtHora(s.inicio, formato12h)}–${fmtHora(s.fin, formato12h)}`}</span>
+                          <div className="mt-0.5 flex flex-wrap items-center justify-between gap-0.5 border-t border-white/30 pt-0.5 text-[9.5px] sm:text-[10.5px] font-black text-white leading-tight shrink-0">
+                            <span className="tabular-nums truncate">⏰ {`${fmtHora(s.inicio, formato12h)}–${fmtHora(s.fin, formato12h)}`}</span>
                             <span
-                              className={`rounded px-1.5 py-0.5 text-[10px] font-mono border font-black shadow-xs ${
+                              className={`rounded px-1 py-0.2 text-[9px] sm:text-[9.5px] font-mono border font-black shadow-xs truncate max-w-[80px] sm:max-w-none ${
                                 esVirt
                                   ? "bg-purple-900 text-purple-100 border-purple-300"
                                   : "bg-black/75 text-white border-white/40"
                               }`}
                               title={esVirt ? "Modalidad No Presencial / Virtual" : `Modalidad Presencial en Aula ${s.aula}`}
                             >
-                              {esVirt ? "💻 Virtual" : `📍 ${s.aula}`}
+                              {esVirt ? "💻 Virt." : `📍 ${s.aula}`}
                             </span>
                           </div>
                         );
