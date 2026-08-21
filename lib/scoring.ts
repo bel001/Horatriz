@@ -1,7 +1,34 @@
-import type { Dia, Horario, Preferencias, Sesion } from "./model";
+import type { Dia, Horario, Preferencias, Sesion, Tipo } from "./model";
 import { DIA_LABEL } from "./model";
 import { DIA_INDEX } from "./parser";
 import { fmtDuracion, fmtHora } from "./time";
+
+export function normKeyDoc(str: string): string {
+  return (str || "").toLowerCase().trim().replace(/[\s\-_()]/g, "");
+}
+
+export function buscarDocenteEsperado(
+  porCurso: Record<string, Partial<Record<Tipo, string>>>,
+  s: Sesion
+): string | undefined {
+  const codNorm = normKeyDoc(s.codigo);
+  const curNorm = normKeyDoc(s.curso);
+
+  for (const [key, mapaTipos] of Object.entries(porCurso)) {
+    const kNorm = normKeyDoc(key);
+    if (
+      kNorm &&
+      (kNorm === codNorm ||
+        kNorm === curNorm ||
+        (codNorm.length >= 3 && (codNorm.includes(kNorm) || kNorm.includes(codNorm))) ||
+        (curNorm.length >= 3 && (curNorm.includes(kNorm) || kNorm.includes(curNorm))))
+    ) {
+      const val = mapaTipos[s.tipo];
+      if (val) return val;
+    }
+  }
+  return undefined;
+}
 
 export interface MetricasHorario {
   score: number;
@@ -71,7 +98,7 @@ export function metricasHorario(cuadro: Horario[], prefs: Preferencias): Metrica
   for (const s of sesiones) {
     const docNorm = s.docente.toLowerCase().trim();
     if (preferidosDoc.some((p) => p && docNorm.includes(p))) coincidenciasDocente++;
-    const esperado = porCurso[s.codigo]?.[s.tipo];
+    const esperado = buscarDocenteEsperado(porCurso, s);
     if (esperado && docNorm.includes(esperado.toLowerCase().trim())) {
       coincidenciasDocente++;
       coincidenciasEspecificas++;
@@ -159,12 +186,11 @@ export function puntuarHorario(cuadro: Horario[], prefs: Preferencias): { score:
     for (const [tipo, prof] of Object.entries(mapaT)) {
       if (prof && prof.trim()) {
         totalEsperadosDoc++;
-        const match = sesiones.some(
-          (s: Sesion) =>
-            (s.codigo === cod || s.curso === cod) &&
-            s.tipo === tipo &&
-            s.docente.toLowerCase().trim().includes(prof.toLowerCase().trim())
-        );
+        const match = sesiones.some((s: Sesion) => {
+          if (s.tipo !== tipo) return false;
+          const esp = buscarDocenteEsperado(porCursoDoc, s);
+          return esp ? s.docente.toLowerCase().trim().includes(esp.toLowerCase().trim()) : false;
+        });
         if (match) coincidenciasEspecificas++;
       }
     }

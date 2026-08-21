@@ -17,6 +17,7 @@ import { PreferenciasPanel } from "../PreferenciasPanel";
 import { GridSemana, dotDeCurso } from "../GridSemana";
 import { ComparadorHorarios } from "../ComparadorHorarios";
 import type { BorradorGuardado } from "@/lib/hooks/useEstadoHorarios";
+import { buscarDocenteEsperado } from "@/lib/scoring";
 
 export function PasoCursosResultados({
   cursos,
@@ -138,12 +139,11 @@ export function PasoCursosResultados({
       for (const [tipoKey, profNombre] of Object.entries(mapaT)) {
         if (profNombre && profNombre.trim()) {
           const tipo = tipoKey as Tipo;
-          const existeEnResultado = todasSesionesGeneradas.some(
-            (s) =>
-              (s.codigo === cod || s.curso === cod) &&
-              s.tipo === tipo &&
-              s.docente.toLowerCase().trim().includes(profNombre.toLowerCase().trim())
-          );
+          const existeEnResultado = todasSesionesGeneradas.some((s) => {
+            if (s.tipo !== tipo) return false;
+            const esp = buscarDocenteEsperado(porCurso, s);
+            return esp ? s.docente.toLowerCase().trim().includes(esp.toLowerCase().trim()) : false;
+          });
           if (!existeEnResultado) {
             noEncontrados.push({
               curso: nombreCurso,
