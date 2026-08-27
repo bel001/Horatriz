@@ -81,7 +81,7 @@ export function PasoCursosResultados({
   const superRef = useRef<HTMLDivElement>(null);
   const [configAbiertas, setConfigAbiertas] = useState<Set<string>>(new Set());
   const [resultadoVistoRef, setResultadoVistoRef] = useState<ResultadoGeneracion | null>(null);
-  const [vista, setVista] = useState<"grid" | "super">("super");
+  const [vista, setVista] = useState<"grid" | "super">("grid");
   const hayResultadoNuevo = tabMovilPrincipal === "config" && resultado !== null && resultado !== resultadoVistoRef;
 
   useEffect(() => {
@@ -877,17 +877,18 @@ export function PasoCursosResultados({
                     </Btn>
                   </div>
 
-                  {/* Switch: Grid clásico vs SuperVisual */}
-                  {vista === "grid" ? (
-                    <div ref={gridRef} className="p-1 sm:p-2 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-inner">
-                      <GridSemana
-                        sesiones={horarioActual.sesiones}
-                        colores={colores}
-                        gruposPorCurso={gruposPorCurso}
-                        mostrarHuecos={true}
-                      />
-                    </div>
-                  ) : (
+                  {/* Grid clásico — siempre visible como antes */}
+                  <div ref={gridRef} className="p-1 sm:p-2 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-inner">
+                    <GridSemana
+                      sesiones={horarioActual.sesiones}
+                      colores={colores}
+                      gruposPorCurso={gruposPorCurso}
+                      mostrarHuecos={true}
+                    />
+                  </div>
+
+                  {/* SuperVisual — se agrega debajo cuando está activa (no reemplaza el horario) */}
+                  {vista === "super" && (
                     <div ref={superRef} className="rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-950 shadow-inner">
                       <SuperVisualView
                         horario={horarioActual}
