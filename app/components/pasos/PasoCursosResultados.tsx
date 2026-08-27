@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   Curso,
   HorarioResult,
@@ -6,7 +6,7 @@ import type {
   ResultadoGeneracion,
   Tipo,
 } from "@/lib/model";
-import { SIN_RESTRICCIONES, TIPO_LABEL } from "@/lib/model";
+import { metaDeScore, SIN_RESTRICCIONES, TIPO_LABEL } from "@/lib/model";
 import { fmtDuracion } from "@/lib/time";
 import type { GrupoProf } from "@/lib/groups";
 import { gruposDeCurso, todosProfesDelTipo } from "@/lib/groups";
@@ -16,6 +16,7 @@ import { Badge, Btn, Card, Checkbox, Paso, inputCls } from "../ui";
 import { PreferenciasPanel } from "../PreferenciasPanel";
 import { GridSemana, dotDeCurso } from "../GridSemana";
 import { ComparadorHorarios } from "../ComparadorHorarios";
+import { SuperVisualView } from "../SuperVisualView";
 import type { BorradorGuardado } from "@/lib/hooks/useEstadoHorarios";
 import { buscarDocenteEsperado } from "@/lib/scoring";
 
@@ -77,9 +78,25 @@ export function PasoCursosResultados({
   const [borradorVer, setBorradorVer] = useState<BorradorGuardado | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const modalGridRef = useRef<HTMLDivElement>(null);
+  const superRef = useRef<HTMLDivElement>(null);
   const [configAbiertas, setConfigAbiertas] = useState<Set<string>>(new Set());
   const [resultadoVistoRef, setResultadoVistoRef] = useState<ResultadoGeneracion | null>(null);
+  const [vista, setVista] = useState<"grid" | "super">("super");
   const hayResultadoNuevo = tabMovilPrincipal === "config" && resultado !== null && resultado !== resultadoVistoRef;
+
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem("horatriz_vista_preferida");
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrating persisted preference after mount is intentional
+      if (v === "grid" || v === "super") setVista(v);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("horatriz_vista_preferida", vista);
+    } catch {}
+  }, [vista]);
 
   const cursosFiltrados = useMemo(() => {
     const q = busquedaCurso.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -163,11 +180,14 @@ export function PasoCursosResultados({
   const horarioActual = horariosFiltrados[idxSeleccionado] ?? horariosFiltrados[0];
 
   const exportarPng = async () => {
-    if (!gridRef.current) return;
+    const target = vista === "super" ? superRef.current : gridRef.current;
+    if (!target) return;
     try {
-      const dataUrl = await toPng(gridRef.current, { cacheBust: true, pixelRatio: 2 });
+      const isDark = typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches && document.documentElement.classList.contains("dark");
+      const bg = isDark ? "#09090b" : "#ffffff";
+      const dataUrl = await toPng(target, { cacheBust: true, pixelRatio: 2, backgroundColor: bg });
       const link = document.createElement("a");
-      link.download = `horario_${horarioActual?.score ?? 100}pts.png`;
+      link.download = `horario_${horarioActual?.score ?? 100}pts_${vista}.png`;
       link.href = dataUrl;
       link.click();
     } catch {
@@ -702,16 +722,47 @@ export function PasoCursosResultados({
             </div>
           )}
 
+          {resultado?.limite && (
+            <div className="rounded-2xl border border-sky-200 bg-sky-50 p-3 dark:border-sky-900/60 dark:bg-sky-950/30 text-sky-900 dark:text-sky-200 flex items-start gap-2.5">
+              <span className="text-base shrink-0">⏱️</span>
+              <div className="text-xs leading-relaxed">
+                <span className="font-black">Tiempo límite alcanzado</span> — se muestran {resultado.horarios.length} de {resultado.considerados + resultado.podados} combinaciones evaluadas en {resultado.tiempoMs}ms. Prueba filtrar cursos o fijar opciones para explorar más rápido.
+              </div>
+            </div>
+          )}
+
           {/* Filtros Rápidos + Carrusel de Opciones Generadas */}
           {resultado && resultado.horarios.length > 0 ? (
             <Card className="space-y-4">
-              {/* Encabezado con Botones de Exportar */}
+              {/* Encabezado con Botones de Exportar + Toggle Vista */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-3 dark:border-zinc-800">
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
                   🎯 Combinaciones ({resultado.horarios.length})
                 </span>
 
-                <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <div className="flex rounded-full bg-zinc-100 p-1 dark:bg-zinc-800" role="tablist" aria-label="Cambiar vista de horario">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={vista === "grid"}
+                      aria-label="Vista grilla clásica"
+                      onClick={() => setVista("grid")}
+                      className={`rounded-full px-3 py-1.5 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 motion-safe:transition-all ${vista === "grid" ? "bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-white" : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"}`}
+                    >
+                      📅 Grid
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={vista === "super"}
+                      aria-label="Vista supervisual dashboard"
+                      onClick={() => setVista("super")}
+                      className={`rounded-full px-3 py-1.5 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 motion-safe:transition-all ${vista === "super" ? "bg-zinc-900 text-white shadow dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"}`}
+                    >
+                      ✨ SuperVisual
+                    </button>
+                  </div>
                   <Btn variant="secondary" onClick={exportarIcs} title="Descargar archivo .ics" className="text-[11px] py-1 px-2 sm:text-sm sm:py-2.5 sm:px-5">
                     📅 iCal
                   </Btn>
@@ -794,7 +845,7 @@ export function PasoCursosResultados({
                         {horarioActual.totalCreditos} créditos totales · {horarioActual.diasConClase.length} días de clase · {fmtDuracion(horarioActual.totalMinutos)} lectivas
                       </p>
                     </div>
-                    <Badge color={horarioActual.score >= 80 ? "emerald" : horarioActual.score >= 50 ? "amber" : "rose"}>
+                    <Badge color={metaDeScore(horarioActual.score).badgeColor}>
                       {horarioActual.minutosHuecos > 0 ? `⏳ Huecos: ${fmtDuracion(horarioActual.minutosHuecos)}` : "✨ Sin huecos"}
                     </Badge>
                   </div>
@@ -826,15 +877,26 @@ export function PasoCursosResultados({
                     </Btn>
                   </div>
 
-                  {/* Grid Semanal con toda la información visible */}
-                  <div ref={gridRef} className="p-1 sm:p-2 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-inner">
-                    <GridSemana
-                      sesiones={horarioActual.sesiones}
-                      colores={colores}
-                      gruposPorCurso={gruposPorCurso}
-                      mostrarHuecos={true}
-                    />
-                  </div>
+                  {/* Switch: Grid clásico vs SuperVisual */}
+                  {vista === "grid" ? (
+                    <div ref={gridRef} className="p-1 sm:p-2 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-inner">
+                      <GridSemana
+                        sesiones={horarioActual.sesiones}
+                        colores={colores}
+                        gruposPorCurso={gruposPorCurso}
+                        mostrarHuecos={true}
+                      />
+                    </div>
+                  ) : (
+                    <div ref={superRef} className="rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-950 shadow-inner">
+                      <SuperVisualView
+                        horario={horarioActual}
+                        cursos={cursos}
+                        prefs={prefs}
+                        colores={colores}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </Card>
@@ -924,7 +986,7 @@ export function PasoCursosResultados({
                         <h4 className="font-extrabold text-xs text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                           {b.nombre}
                         </h4>
-                        <Badge color={b.horario.score >= 80 ? "emerald" : "amber"}>
+                        <Badge color={metaDeScore(b.horario.score).badgeColor}>
                           {b.horario.score}%
                         </Badge>
                       </div>
@@ -975,7 +1037,7 @@ export function PasoCursosResultados({
                   <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-50">
                     {borradorVer.nombre}
                   </h2>
-                  <Badge color={borradorVer.horario.score >= 80 ? "emerald" : "amber"}>
+                  <Badge color={metaDeScore(borradorVer.horario.score).badgeColor}>
                     {borradorVer.horario.score}% Coincidencia
                   </Badge>
                 </div>

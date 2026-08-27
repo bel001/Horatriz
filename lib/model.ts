@@ -158,3 +158,37 @@ export interface ResultadoGeneracion {
   flexibilizado?: boolean;
   restriccionesRelajadas?: string[];
 }
+
+export const SCORE_UMBRALES = {
+  elite: 85,
+  solido: 65,
+  ajustable: 45,
+} as const;
+
+export type ScoreTier = "elite" | "solido" | "ajustable" | "base";
+
+export function tierDeScore(score: number): ScoreTier {
+  if (score >= SCORE_UMBRALES.elite) return "elite";
+  if (score >= SCORE_UMBRALES.solido) return "solido";
+  if (score >= SCORE_UMBRALES.ajustable) return "ajustable";
+  return "base";
+}
+
+export const SCORE_META: Record<ScoreTier, { label: string; icon: string; colorCls: string; gradient: string; badgeColor: "emerald" | "sky" | "amber" | "rose"; stop0: string; stop1: string }> = {
+  elite: { label: "Élite", icon: "✨", colorCls: "text-emerald-600 dark:text-emerald-400", gradient: "from-emerald-500 to-teal-500", badgeColor: "emerald", stop0: "#10b981", stop1: "#14b8a6" },
+  solido: { label: "Sólido", icon: "🔥", colorCls: "text-sky-600 dark:text-sky-400", gradient: "from-sky-500 to-indigo-500", badgeColor: "sky", stop0: "#0ea5e9", stop1: "#6366f1" },
+  ajustable: { label: "Ajustable", icon: "⚡", colorCls: "text-amber-600 dark:text-amber-400", gradient: "from-amber-500 to-orange-500", badgeColor: "amber", stop0: "#f59e0b", stop1: "#f97316" },
+  base: { label: "Base", icon: "🧩", colorCls: "text-rose-600 dark:text-rose-400", gradient: "from-rose-500 to-pink-500", badgeColor: "rose", stop0: "#f43f5e", stop1: "#ec4899" },
+};
+
+export function metaDeScore(score: number) {
+  return SCORE_META[tierDeScore(score)];
+}
+
+export const HORARIO_RANGO = {
+  min: 6 * 60,
+  max: 22 * 60,
+  get span() {
+    return this.max - this.min;
+  },
+} as const;
