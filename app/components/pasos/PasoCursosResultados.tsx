@@ -79,6 +79,9 @@ export function PasoCursosResultados({
   const gridRef = useRef<HTMLDivElement>(null);
   const modalGridRef = useRef<HTMLDivElement>(null);
   const superRef = useRef<HTMLDivElement>(null);
+  const exportGridRef = useRef<HTMLDivElement>(null);
+  const exportSuperRef = useRef<HTMLDivElement>(null);
+  const exportBorradorRef = useRef<HTMLDivElement>(null);
   const [configAbiertas, setConfigAbiertas] = useState<Set<string>>(new Set());
   const [resultadoVistoRef, setResultadoVistoRef] = useState<ResultadoGeneracion | null>(null);
   const [vista, setVista] = useState<"grid" | "super">("grid");
@@ -180,12 +183,14 @@ export function PasoCursosResultados({
   const horarioActual = horariosFiltrados[idxSeleccionado] ?? horariosFiltrados[0];
 
   const exportarPng = async () => {
-    const target = vista === "super" ? superRef.current : gridRef.current;
+    // Exporta versión sin ansiedad (sin "Turno Lleno") para no generar estrés al descargar
+    const hiddenTarget = vista === "super" ? exportSuperRef.current : exportGridRef.current;
+    const visibleTarget = vista === "super" ? superRef.current : gridRef.current;
+    const target = hiddenTarget ?? visibleTarget;
     if (!target) return;
     try {
-      const isDark = typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches && document.documentElement.classList.contains("dark");
-      const bg = isDark ? "#09090b" : "#ffffff";
-      const dataUrl = await toPng(target, { cacheBust: true, pixelRatio: 2, backgroundColor: bg });
+      // Para el PNG usamos fondo claro siempre (más legible al compartir/imprimir)
+      const dataUrl = await toPng(target, { cacheBust: true, pixelRatio: 2, backgroundColor: "#ffffff" });
       const link = document.createElement("a");
       link.download = `horario_${horarioActual?.score ?? 100}pts_${vista}.png`;
       link.href = dataUrl;
@@ -766,7 +771,7 @@ export function PasoCursosResultados({
                   <Btn variant="secondary" onClick={exportarIcs} title="Descargar archivo .ics" className="text-[11px] py-1 px-2 sm:text-sm sm:py-2.5 sm:px-5">
                     📅 iCal
                   </Btn>
-                  <Btn variant="primary" onClick={exportarPng} title="Exportar horario como imagen PNG" className="text-[11px] py-1 px-2 sm:text-sm sm:py-2.5 sm:px-5">
+                  <Btn variant="primary" onClick={exportarPng} title="Descargar PNG — sin mostrar 'Turno Lleno' (tranquilo, no genera ansiedad)" className="text-[11px] py-1 px-2 sm:text-sm sm:py-2.5 sm:px-5">
                     🖼️ PNG
                   </Btn>
                 </div>
@@ -1061,10 +1066,12 @@ export function PasoCursosResultados({
                 </Btn>
                 <Btn
                   variant="primary"
+                  title="Descargar PNG — sin mostrar 'Turno Lleno'"
                   onClick={async () => {
-                    if (modalGridRef.current) {
+                    const target = exportBorradorRef.current ?? modalGridRef.current;
+                    if (target) {
                       try {
-                        const dataUrl = await toPng(modalGridRef.current, { cacheBust: true, pixelRatio: 2 });
+                        const dataUrl = await toPng(target, { cacheBust: true, pixelRatio: 2, backgroundColor: "#ffffff" });
                         const link = document.createElement("a");
                         link.download = `horario_${borradorVer.nombre.toLowerCase().replace(/\s+/g, "_")}.png`;
                         link.href = dataUrl;
@@ -1117,6 +1124,25 @@ export function PasoCursosResultados({
           colores={colores}
           onCerrar={() => setMostrandoComparador(false)}
         />
+      )}
+
+      {/* Export oculto sin ansiedad — no se muestra en UI, solo para PNG */}
+      {horarioActual && (
+        <div className="fixed left-[-9999px] top-0 w-[1200px] pointer-events-none opacity-0" aria-hidden="true">
+          <div ref={exportGridRef} className="bg-white p-4">
+            <GridSemana sesiones={horarioActual.sesiones} colores={colores} gruposPorCurso={gruposPorCurso} mostrarHuecos ocultarLleno />
+          </div>
+          <div ref={exportSuperRef} className="bg-white p-4">
+            <SuperVisualView horario={horarioActual} cursos={cursos} prefs={prefs} colores={colores} ocultarAnsiedad />
+          </div>
+        </div>
+      )}
+      {borradorVer && (
+        <div className="fixed left-[-9999px] top-0 w-[1200px] pointer-events-none opacity-0" aria-hidden="true">
+          <div ref={exportBorradorRef} className="bg-white p-4">
+            <GridSemana sesiones={borradorVer.horario.sesiones} colores={colores} gruposPorCurso={gruposPorCurso} mostrarHuecos ocultarLleno />
+          </div>
+        </div>
       )}
     </div>
   );

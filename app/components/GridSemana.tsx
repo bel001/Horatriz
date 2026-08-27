@@ -101,11 +101,13 @@ export function GridSemana({
   colores,
   gruposPorCurso,
   mostrarHuecos = true,
+  ocultarLleno = false,
 }: {
   sesiones: Sesion[];
   colores?: Record<string, string>;
   gruposPorCurso?: Record<string, GrupoProf[]>;
   mostrarHuecos?: boolean;
+  ocultarLleno?: boolean;
 }) {
   const [verSemanaCompleta, setVerSemanaCompleta] = useState(true);
   const [formato12h, setFormato12h] = useState(false);
@@ -114,6 +116,7 @@ export function GridSemana({
     try {
       const vSemana = localStorage.getItem("horatriz_ver_semana_completa") || localStorage.getItem("upao_ver_semana_completa");
       if (vSemana !== null) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrating from localStorage after mount
         setVerSemanaCompleta(vSemana === "true");
       }
       const vFormato = localStorage.getItem("horatriz_formato_12h") || localStorage.getItem("upao_formato_12h");
@@ -156,6 +159,8 @@ export function GridSemana({
     : (diasUnicos.length > 0 ? diasUnicos : ["LUN", "MAR", "MIE", "JUE", "VIE", "SAB"]);
 
   const [diaActivoMovil, setDiaActivoMovil] = useState<Dia>(diasAMostrar[0] ?? "LUN");
+  const [vistaAgenda, setVistaAgenda] = useState(false);
+  const [containerRef, containerWidth] = useContainerWidth();
 
   if (sesiones.length === 0) {
     return (
@@ -164,9 +169,6 @@ export function GridSemana({
       </p>
     );
   }
-
-  const [vistaAgenda, setVistaAgenda] = useState(false);
-  const [containerRef, containerWidth] = useContainerWidth();
 
   // Todos los días de la semana se muestran de lado a lado, permitiendo scroll horizontal en móvil
   const diasGrid = diasAMostrar;
@@ -443,20 +445,21 @@ export function GridSemana({
                   const esMuyCorto = alto < 55;
                   const esCorto = alto < 85;
 
+                  const mostrarLleno = !ocultarLleno && !!s.esLleno;
                   return (
                     <div
                       key={s.id}
                       className={`absolute inset-x-0.5 z-10 flex flex-col justify-between overflow-hidden rounded-xl border-2 px-1.5 py-1 shadow-xs transition-colors hover:z-30 hover:border-white ${
-                        s.esLleno
+                        mostrarLleno
                           ? "ring-2 ring-rose-500 border-rose-500 " + colorDeCurso(s.codigo, colores)
                           : colorDeCurso(s.codigo, colores)
                       }`}
                       style={{ top, height: Math.max(alto - 2, 26) }}
-                      title={`${s.esLleno ? "[TURNO LLENO] " : ""}${s.curso} · ${tagGrupo} ${s.nrc ? "NRC: " + s.nrc + " " : ""}${s.docente ? "· " + s.docente : ""} · ${fmtHora(s.inicio, formato12h)}-${fmtHora(s.fin, formato12h)} · ${s.aula}`}
+                      title={`${mostrarLleno ? "[TURNO LLENO] " : ""}${s.curso} · ${tagGrupo} ${s.nrc ? "NRC: " + s.nrc + " " : ""}${s.docente ? "· " + s.docente : ""} · ${fmtHora(s.inicio, formato12h)}-${fmtHora(s.fin, formato12h)} · ${s.aula}`}
                     >
                       <div className="space-y-0.5 min-w-0">
-                        {/* Banner de Advertencia si está lleno */}
-                        {s.esLleno && (
+                        {/* Banner de Advertencia si está lleno — oculto en exportación sin ansiedad */}
+                        {mostrarLleno && (
                           <div className="rounded bg-rose-600 px-1 py-0.2 text-center text-[9px] font-black uppercase text-white shadow-xs animate-pulse truncate">
                             ⚠️ Turno Lleno
                           </div>

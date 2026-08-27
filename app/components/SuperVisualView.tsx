@@ -21,11 +21,13 @@ export function SuperVisualView({
   cursos,
   prefs,
   colores,
+  ocultarAnsiedad = false,
 }: {
   horario: HorarioResult | null;
   cursos: Curso[];
   prefs: Preferencias;
   colores?: Record<string, string>;
+  ocultarAnsiedad?: boolean;
 }) {
   const [tab, setTab] = useState<Tab>("timeline");
   const [formato12h, setFormato12h] = useState(false);
@@ -263,16 +265,22 @@ export function SuperVisualView({
             </div>
           </div>
 
-          {horario.advertencias && horario.advertencias.length > 0 && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
-              <h4 className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">⚠️ Observaciones</h4>
-              <ul className="mt-2 list-disc space-y-1 pl-4 text-xs font-medium leading-relaxed text-amber-900 dark:text-amber-200">
-                {horario.advertencias.map((a, i) => (
-                  <li key={i}>{a}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {(() => {
+            const lista = ocultarAnsiedad
+              ? (horario.advertencias ?? []).filter((a) => !/lleno|vacante|agotad/i.test(a))
+              : (horario.advertencias ?? []);
+            if (lista.length === 0) return null;
+            return (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
+                <h4 className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">⚠️ Observaciones</h4>
+                <ul className="mt-2 list-disc space-y-1 pl-4 text-xs font-medium leading-relaxed text-amber-900 dark:text-amber-200">
+                  {lista.map((a, i) => (
+                    <li key={i}>{a}</li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
