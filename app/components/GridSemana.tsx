@@ -102,17 +102,20 @@ export function GridSemana({
   gruposPorCurso,
   mostrarHuecos = true,
   ocultarLleno = false,
+  modoExport = false,
 }: {
   sesiones: Sesion[];
   colores?: Record<string, string>;
   gruposPorCurso?: Record<string, GrupoProf[]>;
   mostrarHuecos?: boolean;
   ocultarLleno?: boolean;
+  modoExport?: boolean;
 }) {
-  const [verSemanaCompleta, setVerSemanaCompleta] = useState(true);
+  const [verSemanaCompleta, setVerSemanaCompleta] = useState(modoExport ? true : true);
   const [formato12h, setFormato12h] = useState(false);
 
   useEffect(() => {
+    if (modoExport) return;
     try {
       const vSemana = localStorage.getItem("horatriz_ver_semana_completa") || localStorage.getItem("upao_ver_semana_completa");
       if (vSemana !== null) {
@@ -124,7 +127,7 @@ export function GridSemana({
         setFormato12h(vFormato === "true");
       }
     } catch {}
-  }, []);
+  }, [modoExport]);
 
   const toggleVerSemanaCompleta = () => {
     setVerSemanaCompleta((prev) => {
@@ -161,6 +164,7 @@ export function GridSemana({
   const [diaActivoMovil, setDiaActivoMovil] = useState<Dia>(diasAMostrar[0] ?? "LUN");
   const [vistaAgenda, setVistaAgenda] = useState(false);
   const [containerRef, containerWidth] = useContainerWidth();
+  const vistaAgendaEfectiva = modoExport ? false : vistaAgenda;
 
   if (sesiones.length === 0) {
     return (
@@ -228,8 +232,9 @@ export function GridSemana({
 
   return (
     <div ref={containerRef} className="space-y-2 sm:space-y-3">
-      {/* Toolbar: Vista Compacta / Completa, Formato 24h/12h, Vista Agenda */}
-      <div className="flex flex-wrap items-center justify-between text-xs pb-1 gap-2">
+      {/* Toolbar: oculto en modoExport para PNG limpio lunes-domingo */}
+      {!modoExport && (
+        <div className="flex flex-wrap items-center justify-between text-xs pb-1 gap-2">
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <button
             type="button"
@@ -271,16 +276,19 @@ export function GridSemana({
           {diasAMostrar.length} días · Desliza ↔️ para explorar la semana
         </span>
       </div>
+      )}
 
-      {/* Pista de Desplazamiento Horizontal en Móvil */}
-      <div className="flex sm:hidden items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 p-2 text-center text-[11px] font-black text-emerald-800 dark:from-emerald-950/80 dark:via-teal-950/80 dark:to-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-xs">
+      {/* Pista de Desplazamiento Horizontal en Móvil - oculto en export */}
+      {!modoExport && (
+        <div className="flex sm:hidden items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 p-2 text-center text-[11px] font-black text-emerald-800 dark:from-emerald-950/80 dark:via-teal-950/80 dark:to-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-xs">
         <span className="animate-bounce">👈</span>
         <span>Desliza con tu dedo a la derecha para ver tu semana completa</span>
         <span className="animate-bounce">👉</span>
       </div>
+      )}
 
       {/* Vista Agenda (Lista Compacta) */}
-      {vistaAgenda ? (() => {
+      {vistaAgendaEfectiva ? (() => {
         const sesionesDelDia = sesionesDelGrid.filter(s => s.dia === diaActivoMovil);
         return (
         <div className="space-y-2 rounded-xl border border-zinc-200 bg-white p-3 shadow-md dark:border-zinc-800 dark:bg-zinc-950">
