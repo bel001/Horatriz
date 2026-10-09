@@ -16,10 +16,10 @@ export function Btn({
   title?: string;
 }) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98] dark:focus-visible:ring-offset-zinc-950";
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-[0.7rem] px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 dark:focus-visible:ring-offset-zinc-950";
   const variantes = {
     primary:
-      "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 active:bg-emerald-800",
+      "bg-emerald-700 text-white shadow-xs hover:bg-emerald-800 active:bg-emerald-900 dark:bg-emerald-600 dark:hover:bg-emerald-500",
     secondary:
       "border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-slate-50 hover:text-slate-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-white",
     ghost:
@@ -48,7 +48,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs dark:border-zinc-800/90 dark:bg-zinc-900 min-w-0 max-w-full ${className}`}
+      className={`min-w-0 max-w-full rounded-2xl border border-slate-200/90 bg-white p-4 shadow-[0_1px_2px_rgb(15_23_42/0.03)] dark:border-zinc-800/90 dark:bg-zinc-900 ${className}`}
     >
       {children}
     </div>
@@ -73,7 +73,7 @@ export function Badge({
   };
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-semibold ${colores[color]}`}
+      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold ${colores[color]}`}
     >
       {children}
     </span>
@@ -82,7 +82,7 @@ export function Badge({
 
 export function Label({ children }: { children: ReactNode }) {
   return (
-    <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-zinc-400">
+    <label className="mb-1.5 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
       {children}
     </label>
   );
@@ -149,15 +149,15 @@ export function Paso({
   n: number;
 }) {
   return (
-    <div className="mb-6 flex items-start gap-3.5">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-sm font-black text-white shadow-xs">
+    <div className="mb-7 flex items-start gap-3.5">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-emerald-700 bg-emerald-700 text-xs font-bold text-white dark:border-emerald-500 dark:bg-emerald-600">
         {n}
       </div>
       <div>
-        <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-zinc-50">
+        <h1 className="text-xl font-semibold tracking-[-0.02em] text-slate-950 sm:text-2xl dark:text-zinc-50">
           {titulo}
         </h1>
-        <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-0.5">{descripcion}</p>
+        <p className="mt-1 max-w-2xl text-sm leading-5 text-slate-600 dark:text-zinc-400">{descripcion}</p>
       </div>
     </div>
   );
@@ -171,28 +171,28 @@ export function stepper(
 ) {
   return (
     <nav aria-label="Navegación de pasos">
-      <ol className="mb-8 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+      <ol className="mb-8 grid grid-cols-3 gap-1 rounded-xl border border-slate-200 bg-white p-1 dark:border-zinc-800 dark:bg-zinc-900">
         {pasos.map((p, i) => {
           const hecho = i < actual;
           const activo = i === actual;
           const esClickeable = Boolean(onSelectPaso) && !disabledPasos?.has(i);
 
           return (
-            <li key={p} className="flex flex-1 items-center gap-2 min-w-max sm:min-w-0">
+            <li key={p} className="min-w-0">
               <button
                 type="button"
                 disabled={!esClickeable}
                 onClick={() => onSelectPaso?.(i)}
-                className={`flex flex-1 items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-bold transition-all text-left ${
-                  esClickeable ? "cursor-pointer hover:scale-[1.01] active:scale-[0.98]" : ""
+                className={`flex min-h-10 w-full items-center justify-center gap-2 rounded-lg px-2 py-2 text-xs font-semibold transition-colors sm:justify-start sm:px-3 ${
+                  esClickeable ? "cursor-pointer" : ""
                 } ${
                   disabledPasos?.has(i)
-                    ? "border-zinc-200 bg-zinc-100 text-zinc-400 cursor-not-allowed opacity-60 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600"
+                    ? "cursor-not-allowed text-zinc-400 opacity-60 dark:text-zinc-600"
                     : hecho
-                      ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300 dark:hover:bg-emerald-900/60"
+                      ? "text-emerald-800 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40"
                       : activo
-                        ? "border-emerald-600 bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                        : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-200"
+                        ? "bg-emerald-700 text-white dark:bg-emerald-600"
+                        : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                 }`}
                 title={disabledPasos?.has(i) ? `Completa los pasos anteriores primero` : `Ir a la vista: ${p}`}
               >
@@ -215,17 +215,8 @@ export function stepper(
                     i + 1
                   )}
                 </span>
-                <span className="whitespace-nowrap truncate">{p}</span>
+                <span className="truncate">{p}</span>
               </button>
-              {i < pasos.length - 1 && (
-                <span
-                  className={`h-px flex-1 hidden sm:block ${
-                    i < actual
-                      ? "bg-emerald-500"
-                      : "bg-zinc-200 dark:bg-zinc-800"
-                  }`}
-                />
-              )}
             </li>
           );
         })}

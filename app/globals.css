@@ -3,8 +3,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
+  --background: #f7f8f7;
+  --foreground: #17201c;
+  --surface: #ffffff;
+  --muted: #66736c;
+  --line: #dfe5e1;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -15,8 +19,12 @@
 }
 
 .dark {
-  --background: #09090b;
-  --foreground: #f4f4f5;
+  --background: #0d1110;
+  --foreground: #eef2ef;
+  --surface: #141917;
+  --muted: #9aa59f;
+  --line: #29312d;
+  color-scheme: dark;
 }
 
 html {
@@ -24,13 +32,27 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(60rem 30rem at 85% -10%, rgb(16 185 129 / 0.08), transparent 60%),
-    radial-gradient(50rem 25rem at -10% 0%, rgb(14 165 233 / 0.06), transparent 55%),
-    var(--background);
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  scroll-margin: 6rem;
 }
 
 ::selection {
@@ -50,6 +72,29 @@ body {
 *::-webkit-scrollbar-thumb {
   background: rgb(113 113 122 / 0.4);
   border-radius: 9999px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 input[type="range"] {

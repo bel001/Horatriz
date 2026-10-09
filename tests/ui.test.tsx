@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PreferenciasPanel } from "@/app/components/PreferenciasPanel";
 import { ResultadosView } from "@/app/components/HorariosApp";

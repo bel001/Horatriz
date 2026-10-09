@@ -21,20 +21,24 @@ export function PasoRevisar({
   onAgregarMas: () => void;
   onContinuar: () => void;
 }) {
-  const validas = filas.filter((f) => f.dia && f.inicio !== null && f.fin !== null).length;
+  const validas = filas.filter((f) => !f.ignorada && f.dia && f.inicio !== null && f.fin !== null).length;
+  const conProblemas = filas.filter(
+    (f) => !f.ignorada && (!f.dia || f.inicio === null || f.fin === null)
+  ).length;
+  const ignoradas = filas.filter((f) => f.ignorada).length;
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[1400px] space-y-6">
       <Paso
         n={2}
-        titulo="Revisar y Corregir Parseo"
-        descripcion="Verifica que las clases se hayan clasificado adecuadamente por curso y corrige cualquier fila marcada en ámbar."
+        titulo="Revisa los datos detectados"
+        descripcion="Comprueba las filas que necesitan atención. Puedes editar cualquier dato antes de continuar."
       />
 
       {advertencias.length > 0 && (
         <Card className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
-          <div className="flex items-start gap-2">
-            <span className="text-base">⚠️</span>
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-xs font-bold text-amber-900">!</span>
             <div className="space-y-1 text-xs">
               <span className="font-bold">Advertencias del parseo ({modo}):</span>
               <ul className="list-disc pl-4 space-y-0.5">
@@ -47,45 +51,33 @@ export function PasoRevisar({
         </Card>
       )}
 
-      {/* Banner Prominente con Botón Directo */}
-      <Card className="border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-950 dark:bg-emerald-950/30">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-start gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white font-black text-sm">
-              ✓
-            </span>
-            <div>
-              <h4 className="text-sm font-black text-slate-900 dark:text-emerald-100">
-                ¡Se detectaron {validas} clases válidas correctamente!
-              </h4>
-              <p className="text-xs text-slate-600 dark:text-zinc-300 mt-0.5 font-medium">
-                No necesitas editar nada en la tabla a menos que veas una casilla resaltada en ámbar.
-              </p>
-            </div>
-          </div>
-          <Btn
-            variant="primary"
-            disabled={validas === 0}
-            onClick={onContinuar}
-            className="w-full sm:w-auto text-xs py-2.5 px-4 font-bold shrink-0"
-          >
-            Todo se ve bien ➔ Ver mi Horario ({validas} clases)
-          </Btn>
+      <Card className="grid gap-3 p-3 sm:grid-cols-3 sm:p-4">
+        <div className="rounded-xl bg-emerald-50 px-4 py-3 dark:bg-emerald-950/30">
+          <p className="text-2xl font-semibold tabular-nums text-emerald-800 dark:text-emerald-300">{validas}</p>
+          <p className="text-xs text-emerald-700 dark:text-emerald-400">filas listas</p>
+        </div>
+        <div className={`rounded-xl px-4 py-3 ${conProblemas ? "bg-amber-50 dark:bg-amber-950/30" : "bg-slate-50 dark:bg-zinc-800/60"}`}>
+          <p className={`text-2xl font-semibold tabular-nums ${conProblemas ? "text-amber-800 dark:text-amber-300" : "text-slate-700 dark:text-zinc-200"}`}>{conProblemas}</p>
+          <p className="text-xs text-slate-500 dark:text-zinc-400">requieren atención</p>
+        </div>
+        <div className="rounded-xl bg-slate-50 px-4 py-3 dark:bg-zinc-800/60">
+          <p className="text-2xl font-semibold tabular-nums text-slate-700 dark:text-zinc-200">{ignoradas}</p>
+          <p className="text-xs text-slate-500 dark:text-zinc-400">ignoradas</p>
         </div>
       </Card>
 
       <EditorFilas filas={filas} onChange={setFilas} />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
-        <Btn variant="secondary" onClick={onVolver}>
-          ← Volver a Texto
+      <div className="sticky bottom-3 z-20 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-[0_12px_36px_rgb(15_23_42/0.12)] backdrop-blur sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800 dark:bg-zinc-900/95">
+        <Btn variant="ghost" onClick={onVolver}>
+          <span aria-hidden="true">←</span> Volver
         </Btn>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Btn variant="secondary" onClick={onAgregarMas}>
-            + Agregar más cursos
+            Añadir más datos
           </Btn>
-          <Btn disabled={validas === 0} onClick={onContinuar}>
-            Confirmar y Continuar ({validas} filas) ➔
+          <Btn disabled={validas === 0} onClick={onContinuar} className="min-w-48">
+            Continuar con {validas} filas <span aria-hidden="true">→</span>
           </Btn>
         </div>
       </div>

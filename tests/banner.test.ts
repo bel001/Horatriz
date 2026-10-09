@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseTexto, filaASesion } from "@/lib/parser";
-import { agruparEnCursos } from "@/lib/groups";
+import { parseTexto } from "@/lib/parser";
 import { esFormatoBanner } from "@/lib/banner";
 
 const TEXTO_BANNER = `Examinar clases

@@ -246,7 +246,7 @@ export function GridSemana({
             }`}
             title="Alternar entre vista compacta (días con clase) y vista completa"
           >
-            {!verSemanaCompleta ? "🗓️ Vista compacta" : "🗓️ Vista completa"}
+            {!verSemanaCompleta ? "Días con clase" : "Semana completa"}
           </button>
           <button
             type="button"
@@ -258,7 +258,7 @@ export function GridSemana({
             }`}
             title="Alternar formato de hora entre 24h y 12h AM/PM"
           >
-            {!formato12h ? "🕒 Formato 24h" : "🕒 Formato 12h (AM/PM)"}
+            {!formato12h ? "24 horas" : "12 horas"}
           </button>
           <button
             type="button"
@@ -269,21 +269,19 @@ export function GridSemana({
                 : "bg-zinc-200 text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-300"
             }`}
           >
-            {vistaAgenda ? "📊 Gráfica" : "📋 Agenda (Lista)"}
+            {vistaAgenda ? "Calendario" : "Agenda"}
           </button>
         </div>
         <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium hidden sm:inline">
-          {diasAMostrar.length} días · Desliza ↔️ para explorar la semana
+          {diasAMostrar.length} días · desplázate horizontalmente para ver más
         </span>
       </div>
       )}
 
       {/* Pista de Desplazamiento Horizontal en Móvil - oculto en export */}
       {!modoExport && (
-        <div className="flex sm:hidden items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 p-2 text-center text-[11px] font-black text-emerald-800 dark:from-emerald-950/80 dark:via-teal-950/80 dark:to-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-xs">
-        <span className="animate-bounce">👈</span>
-        <span>Desliza con tu dedo a la derecha para ver tu semana completa</span>
-        <span className="animate-bounce">👉</span>
+        <div className="flex items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-center text-[11px] font-medium text-emerald-800 sm:hidden dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+          Desliza horizontalmente para ver más días <span className="ml-1" aria-hidden="true">→</span>
       </div>
       )}
 

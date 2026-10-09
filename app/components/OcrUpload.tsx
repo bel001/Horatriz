@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { OCR_DESCARGA_MENSAJES, limpiarTextoOcr } from "@/lib/ocr";
 import { Btn, Card } from "./ui";
 
@@ -53,7 +53,7 @@ export function OcrUpload({ onTexto }: { onTexto: (texto: string) => void }) {
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  const manejarArchivo = async (file: File) => {
+  const manejarArchivo = useCallback(async (file: File) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
       setError("El archivo debe ser una imagen (JPG, PNG, WebP).");
@@ -88,7 +88,7 @@ export function OcrUpload({ onTexto }: { onTexto: (texto: string) => void }) {
       );
       setEstado("error");
     }
-  };
+  }, [onTexto]);
 
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
@@ -106,7 +106,7 @@ export function OcrUpload({ onTexto }: { onTexto: (texto: string) => void }) {
     };
     window.addEventListener("paste", handlePaste);
     return () => window.removeEventListener("paste", handlePaste);
-  }, []);
+  }, [manejarArchivo]);
 
   return (
     <Card className="p-6">

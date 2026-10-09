@@ -14,24 +14,46 @@ export function EditorFilas({
   filas: FilaParseada[];
   onChange: (f: FilaParseada[]) => void;
 }) {
-  const [abiertos, setAbiertos] = useState<Set<string>>(new Set());
+  const [filtro, setFiltro] = useState<"problemas" | "todas" | "ignoradas">("problemas");
+  const [abiertos, setAbiertos] = useState<Set<string>>(
+    () => new Set(
+      filas
+        .filter((f) => !f.ignorada && (!f.dia || f.inicio === null || f.fin === null))
+        .map((f) => (f.codigo || f.curso || "Sin curso").trim())
+    )
+  );
 
   const actualizar = (id: string, patch: Partial<FilaParseada>) => {
     onChange(filas.map((f) => (f.id === id ? { ...f, ...patch } : f)));
   };
 
+  const problemas = filas.filter(
+    (f) => !f.ignorada && (!f.dia || f.inicio === null || f.fin === null)
+  ).length;
+  const filtroActivo = filtro === "problemas" && problemas === 0 ? "todas" : filtro;
+
   const grupos = useMemo(() => {
     const mapa = new Map<string, FilaParseada[]>();
-    for (const f of filas) {
+    const visibles = filas.filter((f) => {
+      if (filtroActivo === "ignoradas") return f.ignorada;
+      if (filtroActivo === "problemas") {
+        return !f.ignorada && (!f.dia || f.inicio === null || f.fin === null);
+      }
+      return true;
+    });
+    for (const f of visibles) {
       const clave = (f.codigo || f.curso || "Sin curso").trim();
       const arr = mapa.get(clave) ?? [];
       arr.push(f);
       mapa.set(clave, arr);
     }
-    return [...mapa.entries()];
-  }, [filas]);
+    return [...mapa.entries()].sort(([, a], [, b]) => {
+      const problemasA = a.filter((f) => !f.ignorada && (!f.dia || f.inicio === null || f.fin === null)).length;
+      const problemasB = b.filter((f) => !f.ignorada && (!f.dia || f.inicio === null || f.fin === null)).length;
+      return problemasB - problemasA;
+    });
+  }, [filas, filtroActivo]);
 
-  const validas = filas.filter((f) => f.dia && f.inicio !== null && f.fin !== null).length;
   const todasAbiertas = grupos.length > 0 && abiertos.size === grupos.length;
 
   const toggle = (clave: string) => {
@@ -49,15 +71,30 @@ export function EditorFilas({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
-        <Badge color="sky">{filas.length} filas</Badge>
-        <Badge color="emerald">{validas} listas para agrupar</Badge>
-        <span>Revisa y corrige las filas resaltadas en ámbar.</span>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 dark:bg-zinc-800" role="tablist" aria-label="Filtrar filas detectadas">
+          {([
+            ["problemas", `Atención (${problemas})`],
+            ["todas", `Todas (${filas.length})`],
+            ["ignoradas", `Ignoradas (${filas.filter((f) => f.ignorada).length})`],
+          ] as const).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={filtroActivo === id}
+              onClick={() => setFiltro(id)}
+              className={`min-h-9 shrink-0 rounded-lg px-3 text-xs font-semibold transition-colors ${filtroActivo === id ? "bg-white text-slate-900 shadow-xs dark:bg-zinc-700 dark:text-white" : "text-slate-500 hover:text-slate-800 dark:text-zinc-400"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         {grupos.length > 0 && (
           <button
             type="button"
             onClick={toggleTodas}
-            className="rounded-lg px-2 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
+            className="min-h-9 rounded-lg px-3 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
           >
             {todasAbiertas ? "Contraer todo" : "Expandir todo"}
           </button>
@@ -66,7 +103,7 @@ export function EditorFilas({
 
       {grupos.length === 0 && (
         <p className="rounded-xl border border-zinc-200 p-6 text-center text-sm text-zinc-400 dark:border-zinc-800">
-          No hay filas para revisar.
+          {filtroActivo === "problemas" ? "No hay filas que requieran atención." : "No hay filas en esta vista."}
         </p>
       )}
 
@@ -75,13 +112,13 @@ export function EditorFilas({
         const curso = filasGrupo.find((f) => f.curso)?.curso ?? clave;
         const codigo = filasGrupo.find((f) => f.codigo)?.codigo ?? "";
         const incompletas = filasGrupo.filter(
-          (f) => f.dia && (f.inicio === null || f.fin === null)
+          (f) => !f.ignorada && (!f.dia || f.inicio === null || f.fin === null)
         ).length;
         const ignoradas = filasGrupo.filter((f) => f.ignorada).length;
         return (
           <div
             key={clave}
-            className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800"
+            className={`overflow-hidden rounded-xl border ${incompletas ? "border-amber-300 dark:border-amber-900" : "border-zinc-200 dark:border-zinc-800"}`}
           >
             <button
               type="button"
@@ -145,7 +182,7 @@ function TablaFilas({
         </thead>
         <tbody>
           {filas.map((f) => {
-            const incompleta = f.dia && (f.inicio === null || f.fin === null);
+            const incompleta = !f.ignorada && (!f.dia || f.inicio === null || f.fin === null);
             return (
               <tr
                 key={f.id}

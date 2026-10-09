@@ -10,6 +10,7 @@ export interface EstadoPersistido {
   creditos: Record<string, number>;
   docPref: Record<string, Partial<Record<Tipo, string>>>;
   colores?: Record<string, string>;
+  fijados?: Record<string, string>;
   seleccionados: string[];
 }
 
@@ -39,6 +40,10 @@ export function cargarEstado(): EstadoPersistido | null {
 export function borrarEstado(): void {
   try {
     localStorage.removeItem(CLAVE);
+    localStorage.removeItem(CLAVE_LEGACY);
+    localStorage.removeItem("horatriz-borradores");
+    localStorage.removeItem("hupao-borradores");
+    localStorage.removeItem("horatriz_vista_preferida");
   } catch {
     /* noop */
   }

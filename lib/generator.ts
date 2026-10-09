@@ -186,7 +186,7 @@ export function generarHorarios(
     return true;
   };
 
-  let flexibilizado = false;
+  const flexibilizado = false;
   const restriccionesRelajadas: string[] = [];
 
   paso(0);

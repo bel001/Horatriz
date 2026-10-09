@@ -48,6 +48,7 @@ export function useEstadoHorarios() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem("horatriz-borradores") || localStorage.getItem("hupao-borradores");
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration from browser storage happens after mount
       if (raw) setBorradores(JSON.parse(raw));
     } catch {
       /* noop */
@@ -116,6 +117,7 @@ export function useEstadoHorarios() {
       setCreditos(cr);
       setDocPref(e.docPref ?? {});
       setColores(e.colores ?? {});
+      setFijados(e.fijados ?? {});
       setSeleccionados(new Set<string>(e.seleccionados ?? nuevos.map((c: Curso) => c.codigo)));
       setPaso(e.paso >= 2 ? 2 : 1);
     };
@@ -147,11 +149,12 @@ export function useEstadoHorarios() {
         creditos,
         docPref,
         colores,
+        fijados,
         seleccionados: [...seleccionados],
       });
     }, 400);
     return () => window.clearTimeout(t);
-  }, [paso, filas, modo, advertencias, prefs, creditos, docPref, colores, seleccionados]);
+  }, [paso, filas, modo, advertencias, prefs, creditos, docPref, colores, fijados, seleccionados]);
 
   // Función para compartir via URL hash
   const compartir = useCallback(async () => {
@@ -165,6 +168,7 @@ export function useEstadoHorarios() {
       creditos,
       docPref,
       colores,
+      fijados,
       seleccionados: [...seleccionados],
     };
     const s = await serializarEstado(e);
@@ -176,7 +180,7 @@ export function useEstadoHorarios() {
     }
     setCompartido(true);
     window.setTimeout(() => setCompartido(false), 2500);
-  }, [filas, modo, advertencias, prefs, creditos, docPref, colores, seleccionados]);
+  }, [filas, modo, advertencias, prefs, creditos, docPref, colores, fijados, seleccionados]);
 
   return {
     paso,

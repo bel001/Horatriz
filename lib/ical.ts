@@ -1,6 +1,5 @@
 import type { HorarioResult, Sesion } from "./model";
 import { DIA_INDEX } from "./parser";
-import { fmtHora } from "./time";
 
 function formatIcsDateTime(date: Date, minutes: number): string {
   const d = new Date(date);

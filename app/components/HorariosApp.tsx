@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type {
-  Curso,
   HorarioResult,
   ResultadoGeneracion,
 } from "@/lib/model";
@@ -66,7 +65,12 @@ export default function HorariosApp() {
 
   // Construir selección y parámetros para generación
   const construirGeneracion = () => {
-    const seleccion = cursos.filter((c) => seleccionados.has(c.codigo));
+    const seleccion = cursos
+      .filter((c) => seleccionados.has(c.codigo))
+      .map((c) => ({
+        ...c,
+        creditos: creditos[c.codigo] ?? c.creditos,
+      }));
     const prefsGen = {
       ...prefs,
       docentesPorCurso: docPref,
@@ -172,7 +176,7 @@ export default function HorariosApp() {
   };
 
   return (
-    <main suppressHydrationWarning className="mx-auto flex-1 w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 py-8">
+    <main suppressHydrationWarning className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Indicador de Pasos / Stepper Interactivo */}
       {stepper(Math.min(paso, 2), PASOS, (idx) => setPaso(idx), disabledPasos)}
 

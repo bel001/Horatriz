@@ -217,12 +217,12 @@ export function PasoCursosResultados({
     <div className="space-y-4 sm:space-y-6">
       <Paso
         n={3}
-        titulo="Generador de Horarios"
-        descripcion="Ajusta cursos y reglas, visualiza horarios optimizados."
+        titulo="Elige tu horario"
+        descripcion="Compara alternativas y ajusta cursos o preferencias cuando lo necesites."
       />
 
       {/* Bar de Acciones Superior */}
-      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-2.5 sm:p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <Badge color="emerald">
             {seleccionados.size}/{cursos.length} cursos
@@ -235,29 +235,30 @@ export function PasoCursosResultados({
               {horariosFiltrados.length} horarios
             </Badge>
           )}
+          {sinLiga > 0 && <Badge color="amber">{sinLiga} sin liga</Badge>}
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
           <Btn
             variant={maximizado ? "primary" : "secondary"}
             onClick={() => setMaximizado(!maximizado)}
             title="Alternar vista ampliada"
-            className="text-[11px] py-1 px-2 hidden sm:inline-flex"
+            className="min-h-9 px-3 py-1 text-xs max-sm:hidden"
           >
-            {maximizado ? "↙️ Normal" : "↔️ Ampliar"}
+            {maximizado ? "Vista normal" : "Ampliar horario"}
           </Btn>
-          <Btn variant="secondary" onClick={onCompartir} className="text-[11px] py-1 px-2">
-            {compartido ? "✅ Copiado" : "🔗"}<span className="hidden sm:inline ml-1">Compartir</span>
+          <Btn variant="secondary" onClick={onCompartir} className="min-h-9 px-3 py-1 text-xs">
+            {compartido ? "Enlace copiado" : "Compartir"}
           </Btn>
           <Btn
             variant="secondary"
             onClick={() => setMostrandoComparador(true)}
             disabled={!resultado || resultado.horarios.length < 2}
-            className="text-[11px] py-1 px-2"
+            className="min-h-9 px-3 py-1 text-xs"
           >
-            🔀<span className="hidden sm:inline ml-1">Comparar</span>
+            Comparar
           </Btn>
-          <Btn variant="secondary" onClick={onVolver} className="text-[11px] py-1 px-2">
-            ← <span className="hidden sm:inline">Volver</span>
+          <Btn variant="ghost" onClick={onVolver} className="min-h-9 px-3 py-1 text-xs">
+            <span aria-hidden="true">←</span> Volver
           </Btn>
         </div>
       </div>
@@ -283,7 +284,7 @@ export function PasoCursosResultados({
               <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
             </span>
           )}
-          <span>📅</span> Ver Horario
+          Ver horario
           {resultado && (
             <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-mono">
               {horariosFiltrados.length}
@@ -299,7 +300,7 @@ export function PasoCursosResultados({
               : "text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
           }`}
         >
-          <span>📚</span> Cursos & Filtros
+          Cursos y preferencias
           <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-mono">
             {seleccionados.size}
           </span>
@@ -310,7 +311,7 @@ export function PasoCursosResultados({
       <div className="grid gap-6 lg:grid-cols-12">
         {/* COLUMNA IZQUIERDA (Sidebar - Cursos, Bloques y Preferencias) */}
         {!maximizado && (
-          <div className={`space-y-4 lg:col-span-4 ${tabMovilPrincipal === "config" ? "block" : "hidden lg:block"}`}>
+          <aside className={`space-y-4 lg:sticky lg:top-24 lg:col-span-4 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1 ${tabMovilPrincipal === "config" ? "block" : "hidden lg:block"}`}>
             {/* Pestañas del Sidebar */}
             <div className="flex border-b border-zinc-200 dark:border-zinc-800">
               <button
@@ -322,7 +323,7 @@ export function PasoCursosResultados({
                     : "border-transparent text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white"
                 }`}
               >
-                📚 Cursos ({cursos.length})
+                Cursos ({cursos.length})
               </button>
               <button
                 type="button"
@@ -333,7 +334,7 @@ export function PasoCursosResultados({
                     : "border-transparent text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white"
                 }`}
               >
-                ⚙️ Preferencias & Bloques
+                Preferencias
               </button>
             </div>
 
@@ -358,11 +359,11 @@ export function PasoCursosResultados({
                     type="text"
                     value={busquedaCurso}
                     onChange={(e) => setBusquedaCurso(e.target.value)}
-                    placeholder="🔍 Buscar curso por nombre o código..."
+                    placeholder="Buscar por nombre o código"
                     className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 pl-9 pr-8 text-xs outline-none transition-colors placeholder:text-zinc-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:ring-emerald-900/40"
                   />
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs opacity-60">
-                    🔍
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                   </span>
                   {busquedaCurso && (
                     <button
@@ -390,12 +391,12 @@ export function PasoCursosResultados({
                       })
                     }
                     className={`rounded-lg px-2 py-0.5 font-semibold transition-all shrink-0 text-[11px] ${
-                      prefs.horaMinimaClase < 420 || (prefs.horaMinimaClase === 480 && prefs.restricciones.horaMax === 0)
+                      prefs.pesoMadrugada === 0 && prefs.restricciones.horaMax === 0
                         ? "bg-emerald-600 text-white shadow-xs"
                         : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300"
                     }`}
                   >
-                    🌐 Todos
+                    Cualquiera
                   </button>
                   <button
                     type="button"
@@ -403,17 +404,17 @@ export function PasoCursosResultados({
                       setPrefs({
                         ...prefs,
                         pesoMadrugada: 1,
-                        horaMinimaClase: 420,
+                        horaMinimaClase: 360,
                         restricciones: { ...prefs.restricciones, horaMax: 840 },
                       })
                     }
                     className={`rounded-lg px-2 py-0.5 font-semibold transition-all shrink-0 text-[11px] ${
-                      prefs.horaMinimaClase >= 420 && prefs.restricciones.horaMax === 840
+                      prefs.horaMinimaClase === 360 && prefs.restricciones.horaMax === 840
                         ? "bg-amber-500 text-white shadow-xs"
                         : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300"
                     }`}
                   >
-                    ☀️ Mañana
+                    Mañana
                   </button>
                   <button
                     type="button"
@@ -431,7 +432,7 @@ export function PasoCursosResultados({
                         : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300"
                     }`}
                   >
-                    ⛅ Tarde
+                    Tarde
                   </button>
                   <button
                     type="button"
@@ -449,7 +450,7 @@ export function PasoCursosResultados({
                         : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300"
                     }`}
                   >
-                    🌙 Noche
+                    Noche
                   </button>
                 </div>
 
@@ -656,7 +657,7 @@ export function PasoCursosResultados({
                     className="w-full justify-center py-2.5 font-extrabold border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-emerald-500 dark:hover:border-emerald-400 text-zinc-700 dark:text-zinc-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all shadow-sm"
                     onClick={onAgregarMas}
                   >
-                    ➕ Agregar más cursos
+                    Añadir más cursos
                   </Btn>
                 )}
               </div>
@@ -673,7 +674,7 @@ export function PasoCursosResultados({
                 }}
               />
             )}
-          </div>
+          </aside>
         )}
 
         {/* COLUMNA DERECHA (Panel Principal - Opciones Rankeadas + Grid Semanal) */}
@@ -735,11 +736,11 @@ export function PasoCursosResultados({
 
           {/* Filtros Rápidos + Carrusel de Opciones Generadas */}
           {resultado && resultado.horarios.length > 0 ? (
-            <Card className="space-y-4">
+            <Card className="space-y-4 p-3 sm:p-5">
               {/* Encabezado con Botones de Exportar + Toggle Vista */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-3 dark:border-zinc-800">
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                  🎯 Combinaciones ({resultado.horarios.length})
+                  {resultado.horarios.length} alternativas encontradas
                 </span>
 
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -752,7 +753,7 @@ export function PasoCursosResultados({
                       onClick={() => setVista("grid")}
                       className={`rounded-full px-3 py-1.5 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 motion-safe:transition-all ${vista === "grid" ? "bg-white text-zinc-900 shadow dark:bg-zinc-700 dark:text-white" : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"}`}
                     >
-                      📅 Grid
+                      Semana
                     </button>
                     <button
                       type="button"
@@ -762,14 +763,14 @@ export function PasoCursosResultados({
                       onClick={() => setVista("super")}
                       className={`rounded-full px-3 py-1.5 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 motion-safe:transition-all ${vista === "super" ? "bg-zinc-900 text-white shadow dark:bg-white dark:text-zinc-900" : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400"}`}
                     >
-                      ✨ SuperVisual
+                      Resumen
                     </button>
                   </div>
-                  <Btn variant="secondary" onClick={exportarIcs} title="Descargar archivo .ics" className="text-[11px] py-1 px-2 sm:text-sm sm:py-2.5 sm:px-5">
-                    📅 iCal
+                  <Btn variant="secondary" onClick={exportarIcs} title="Descargar archivo .ics" className="min-h-9 px-3 py-1 text-xs">
+                    iCal
                   </Btn>
-                  <Btn variant="primary" onClick={exportarPng} title="Descargar PNG — horario lunes a domingo, sin 'Turno Lleno'" className="text-[11px] py-1 px-2 sm:text-sm sm:py-2.5 sm:px-5">
-                    🖼️ PNG
+                  <Btn variant="primary" onClick={exportarPng} title="Descargar PNG — horario lunes a domingo, sin 'Turno Lleno'" className="min-h-9 px-3 py-1 text-xs">
+                    Descargar PNG
                   </Btn>
                 </div>
               </div>
@@ -812,14 +813,14 @@ export function PasoCursosResultados({
                       key={idx}
                       type="button"
                       onClick={() => setIdxSeleccionado(idx)}
-                      className={`flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all border ${
+                    className={`flex min-h-10 shrink-0 items-center gap-2 rounded-lg border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                         activo
-                          ? "bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/30"
-                          : "bg-zinc-200 text-zinc-900 border-zinc-300 hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-700"
+                          ? "border-emerald-700 bg-emerald-700 text-white dark:border-emerald-500 dark:bg-emerald-600"
+                          : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
                       }`}
                     >
                       <span>
-                        {tieneAdv ? "⚠️ " : ""}Opción #{idx + 1}
+                        {tieneAdv ? "! " : ""}Opción {idx + 1}
                       </span>
                       <span
                         className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
@@ -838,25 +839,27 @@ export function PasoCursosResultados({
               {/* Detalle de la Opción Seleccionada */}
               {horarioActual && (
                 <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/40">
+                  <div className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center dark:border-zinc-800 dark:bg-zinc-800/40">
                     <div>
-                      <h3 className="text-base font-extrabold text-zinc-900 dark:text-zinc-50">
-                        Horario Opción #{idxSeleccionado + 1} ({horarioActual.score}% match)
+                      <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+                        Opción {idxSeleccionado + 1} · {metaDeScore(horarioActual.score).label}
                       </h3>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400">
                         {horarioActual.totalCreditos} créditos totales · {horarioActual.diasConClase.length} días de clase · {fmtDuracion(horarioActual.totalMinutos)} lectivas
                       </p>
                     </div>
-                    <Badge color={metaDeScore(horarioActual.score).badgeColor}>
-                      {horarioActual.minutosHuecos > 0 ? `⏳ Huecos: ${fmtDuracion(horarioActual.minutosHuecos)}` : "✨ Sin huecos"}
-                    </Badge>
+                    <div className="text-left sm:text-right">
+                      <p className="text-2xl font-semibold tabular-nums text-emerald-700 dark:text-emerald-400">{horarioActual.score}<span className="text-sm">/100</span></p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">{horarioActual.minutosHuecos > 0 ? `${fmtDuracion(horarioActual.minutosHuecos)} de huecos` : "Sin huecos"}</p>
+                    </div>
                   </div>
 
                   {/* Advertencias / Observaciones de Preferencias en el Horario Actual */}
                   {horarioActual.advertencias && horarioActual.advertencias.length > 0 && (
                     <div className="rounded-xl border border-amber-300/80 bg-amber-50/90 p-3 dark:border-amber-900/60 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 space-y-1 text-xs">
-                      <div className="font-extrabold flex items-center gap-1.5 text-amber-900 dark:text-amber-100">
-                        <span>⚠️</span> Observaciones sobre tus preferencias:
+                      <div className="flex items-center gap-2 font-semibold text-amber-900 dark:text-amber-100">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-200 text-[10px] font-bold text-amber-950">!</span>
+                        Aspectos que puedes mejorar
                       </div>
                       <ul className="list-disc list-inside space-y-0.5 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
                         {horarioActual.advertencias.map((adv, i) => (
@@ -875,23 +878,21 @@ export function PasoCursosResultados({
                       onChange={(e) => setNombreBorrador(e.target.value)}
                     />
                     <Btn variant="secondary" onClick={handleGuardar} className="text-xs py-1.5 shrink-0">
-                      {guardadoExitosa ? "¡Guardado! 💾" : "💾 Guardar"}
+                      {guardadoExitosa ? "Guardado" : "Guardar horario"}
                     </Btn>
                   </div>
 
-                  {/* Grid clásico — siempre visible como antes */}
-                  <div ref={gridRef} className="p-1 sm:p-2 bg-white dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-inner">
-                    <GridSemana
-                      sesiones={horarioActual.sesiones}
-                      colores={colores}
-                      gruposPorCurso={gruposPorCurso}
-                      mostrarHuecos={true}
-                    />
-                  </div>
-
-                  {/* SuperVisual — se agrega debajo cuando está activa (no reemplaza el horario) */}
-                  {vista === "super" && (
-                    <div ref={superRef} className="rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-950 shadow-inner">
+                  {vista === "grid" ? (
+                    <div ref={gridRef} className="overflow-hidden rounded-xl border border-zinc-200 bg-white p-1 sm:p-2 dark:border-zinc-800 dark:bg-zinc-950">
+                      <GridSemana
+                        sesiones={horarioActual.sesiones}
+                        colores={colores}
+                        gruposPorCurso={gruposPorCurso}
+                        mostrarHuecos={true}
+                      />
+                    </div>
+                  ) : (
+                    <div ref={superRef} className="rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-950">
                       <SuperVisualView
                         horario={horarioActual}
                         cursos={cursos}

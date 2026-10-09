@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { BloquePersonal, Dia, Preferencias, Restricciones } from "@/lib/model";
 import { DIAS, DIA_LABEL } from "@/lib/model";
 import { fmtHora, toMinutes } from "@/lib/time";
-import { Badge, Btn, Card, Checkbox, inputCls } from "./ui";
+import { Btn, Card, Checkbox, inputCls } from "./ui";
 
 function activo(p: Preferencias, k: keyof Preferencias): boolean {
   return (p[k] as number) > 0;
@@ -24,7 +24,6 @@ export function PreferenciasPanel({
   const [nuevoDia, setNuevoDia] = useState<Dia>("LUN");
   const [nuevoInicio, setNuevoInicio] = useState("14:00");
   const [nuevoFin, setNuevoFin] = useState("18:00");
-  const [perfilAplicado, setPerfilAplicado] = useState<string | null>(null);
 
   const setPeso = (
     k: "pesoHuecos" | "pesoMadrugada" | "pesoDiasLibres" | "pesoDocentes",
@@ -75,62 +74,14 @@ export function PreferenciasPanel({
 
   const bloquesActuales = prefs.restricciones.bloquesPersonales ?? [];
 
-  const esManana = prefs.horaMinimaClase >= 420 && prefs.restricciones.horaMax === 840;
+  const esManana = prefs.horaMinimaClase === 360 && prefs.restricciones.horaMax === 840;
   const esTarde = prefs.horaMinimaClase >= 780 && prefs.restricciones.horaMax === 1080;
   const esNoche = prefs.horaMinimaClase >= 1080 && prefs.restricciones.horaMax === 1350;
-  const esCualquiera = !esManana && !esTarde && !esNoche;
-
-  const aplicarTurno = (turno: "cualquiera" | "manana" | "tarde" | "noche") => {
-    if (turno === "manana") {
-      onChange({
-        ...prefs,
-        pesoMadrugada: 1,
-        horaMinimaClase: 420,
-        restricciones: {
-          ...prefs.restricciones,
-          horaMax: 840,
-        },
-      });
-    } else if (turno === "tarde") {
-      onChange({
-        ...prefs,
-        pesoMadrugada: 1,
-        horaMinimaClase: 780,
-        restricciones: {
-          ...prefs.restricciones,
-          horaMax: 1080,
-        },
-      });
-    } else if (turno === "noche") {
-      onChange({
-        ...prefs,
-        pesoMadrugada: 1,
-        horaMinimaClase: 1080,
-        restricciones: {
-          ...prefs.restricciones,
-          horaMax: 1350,
-        },
-      });
-    } else {
-      onChange({
-        ...prefs,
-        pesoMadrugada: 0,
-        horaMinimaClase: 480,
-        restricciones: {
-          ...prefs.restricciones,
-          horaMax: 0,
-        },
-      });
-    }
-  };
-
   const aplicarPerfil = (perfil: "compacto" | "equilibrado" | "finde") => {
-    let msg = "";
     const esActivoMismo = prefs.perfilAcademico === perfil;
     const nuevoPerfil = esActivoMismo ? null : perfil;
 
     if (nuevoPerfil === "compacto") {
-      msg = "Bloque compacto (3 días)";
       onChange({
         ...prefs,
         perfilAcademico: "compacto",
@@ -143,7 +94,6 @@ export function PreferenciasPanel({
         },
       });
     } else if (nuevoPerfil === "equilibrado") {
-      msg = "Distribución equilibrada (4 días)";
       onChange({
         ...prefs,
         perfilAcademico: "equilibrado",
@@ -156,7 +106,6 @@ export function PreferenciasPanel({
         },
       });
     } else if (nuevoPerfil === "finde") {
-      msg = "Opción fin de semana";
       onChange({
         ...prefs,
         perfilAcademico: "finde",
@@ -174,7 +123,6 @@ export function PreferenciasPanel({
         perfilAcademico: null,
       });
     }
-    setPerfilAplicado(nuevoPerfil ? msg : null);
     if (onAplicarPerfil) {
       setTimeout(() => onAplicarPerfil(), 100);
     }
@@ -184,11 +132,11 @@ export function PreferenciasPanel({
     <div className="grid gap-4">
       {/* Indicador del Turno Activo (se configura desde la barra lateral de cursos) */}
       <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-        <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-          ⚡ Turno Activo
+        <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+          Turno seleccionado
         </p>
         <div className="mt-2 flex items-center gap-2">
-          <span className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-black ${
+          <span className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${
             esManana
               ? "bg-amber-500 text-white"
               : esTarde
@@ -197,14 +145,14 @@ export function PreferenciasPanel({
                   ? "bg-indigo-600 text-white"
                   : "bg-emerald-600 text-white"
           }`}>
-            {esManana ? "☀️ Solo Mañana (07:00–14:00)"
-              : esTarde ? "⛅ Solo Tarde (13:00–18:00)"
-              : esNoche ? "🌙 Solo Noche (18:00–22:30)"
-              : "🌐 Cualquier Turno"}
+            {esManana ? "Mañana · 06:00–14:00"
+              : esTarde ? "Tarde · 13:00–18:00"
+              : esNoche ? "Noche · 18:00–22:30"
+              : "Cualquier turno"}
           </span>
         </div>
         <p className="mt-2 text-[11px] text-zinc-500 dark:text-zinc-400">
-          💡 Puedes cambiar el turno desde los botones rápidos en la pestaña <strong>Cursos</strong>.
+          Puedes cambiarlo desde los accesos rápidos de la pestaña Cursos.
         </p>
       </Card>
 
@@ -212,11 +160,11 @@ export function PreferenciasPanel({
       <Card className="space-y-2.5">
         <div className="flex items-center justify-between">
           <p className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
-            🎯 Perfiles de Conveniencia Académica
+            Perfiles rápidos
           </p>
           {prefs.perfilAcademico && (
             <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-800">
-              Perfil Activo
+              Activo
             </span>
           )}
         </div>
@@ -231,8 +179,8 @@ export function PreferenciasPanel({
             }`}
           >
             <div>
-              <span className="font-black text-zinc-900 dark:text-zinc-100">🚀 Bloque compacto (3 días)</span>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Concentra carga en 3 días para liberar 4 días continuos.</p>
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100">Compacto</span>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Concentra clases y reduce huecos.</p>
             </div>
             <span className={`text-xs font-black shrink-0 ${
               prefs.perfilAcademico === "compacto"
@@ -253,8 +201,8 @@ export function PreferenciasPanel({
             }`}
           >
             <div>
-              <span className="font-black text-zinc-900 dark:text-zinc-100">⚖️ Distribución equilibrada (4 días)</span>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Reduce horas continuas repartiendo carga de Lun a Jue (máx 6h/día).</p>
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100">Equilibrado</span>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Reparte la carga en jornadas de hasta 6 horas.</p>
             </div>
             <span className={`text-xs font-black shrink-0 ${
               prefs.perfilAcademico === "equilibrado"
@@ -275,8 +223,8 @@ export function PreferenciasPanel({
             }`}
           >
             <div>
-              <span className="font-black text-zinc-900 dark:text-zinc-100">🗓️ Opción fin de semana</span>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Desplaza talleres al Sábado para desahogar tardes laborables.</p>
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100">Fin de semana</span>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Considera el sábado para liberar días laborables.</p>
             </div>
             <span className={`text-xs font-black shrink-0 ${
               prefs.perfilAcademico === "finde"
@@ -357,9 +305,12 @@ export function PreferenciasPanel({
           }
         />
       </Card>
-
-
-
+      <details className="group rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+          Configuración avanzada
+          <span className="text-zinc-400 transition-transform group-open:rotate-180" aria-hidden="true">⌄</span>
+        </summary>
+        <div className="grid gap-3 border-t border-zinc-100 p-3 dark:border-zinc-800">
       <Card>
         <p className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
           Reglas estrictas (descartan horarios)
@@ -435,7 +386,7 @@ export function PreferenciasPanel({
       {/* Gestor de Bloques Personales */}
       <Card>
         <p className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-          🛑 Bloques Personales Bloqueados (Trabajo, Gym, etc.)
+          Bloques personales
         </p>
         <p className="mt-1 text-xs text-zinc-400 leading-normal">
           Define horas donde no puedes asistir a clases. El algoritmo descartará cualquier cruce.
@@ -558,6 +509,8 @@ export function PreferenciasPanel({
           Si defines el rango, los horarios fuera de él quedan con menor puntaje.
         </p>
       </Card>
+        </div>
+      </details>
     </div>
   );
 }

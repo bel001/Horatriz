@@ -187,6 +187,7 @@ export function puntuarHorario(cuadro: Horario[], prefs: Preferencias): { score:
       if (prof && prof.trim()) {
         totalEsperadosDoc++;
         const match = sesiones.some((s: Sesion) => {
+          if (s.codigo !== cod) return false;
           if (s.tipo !== tipo) return false;
           const esp = buscarDocenteEsperado(porCursoDoc, s);
           return esp ? s.docente.toLowerCase().trim().includes(esp.toLowerCase().trim()) : false;
